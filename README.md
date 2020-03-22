@@ -7,6 +7,8 @@ Run flask: `flask run`
 
 ## Add User
 
+Adds a user to the database
+
 ```
 POST: localhost:5000/add_user
 Returns:
@@ -19,6 +21,8 @@ Returns:
 ```
 
 ## Get User
+
+Pulls details about a user from the database when given an appropriate uuid
 
 ```
 POST: localhost:5000/get_user
