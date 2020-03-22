@@ -22,3 +22,5 @@ from . import views
 
 # Setup Routes
 api.add_resource(views.AddUser, '/add_user')
+api.add_resource(views.GetUser, '/get_user')
+
