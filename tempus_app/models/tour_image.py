@@ -12,4 +12,4 @@ class TourImage(db.Model):
     date = db.Column(db.Date)
     image = db.Column(db.LargeBinary)
 
-    tour = db.relationship('TOUR', primaryjoin='TOURIMAGE.tour_id == TOUR.id', backref='tourimages')
+    # tour = db.relationship('TOUR', primaryjoin='TOUR_IMAGE.tour_id == TOUR.id', backref='tourimages')

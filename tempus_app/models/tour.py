@@ -11,4 +11,4 @@ class Tour(db.Model):
     description = db.Column(db.Text)
     rating = db.Column(db.Float)
 
-    guide = db.relationship('USER', primaryjoin='TOUR.guide_id == USER.id', backref='tours')
+    # guide = db.relationship('USER', primaryjoin='TOUR.guide_id == USER.id', backref='tours')

@@ -9,5 +9,5 @@ class Vernacular(db.Model):
     language_id = db.Column(db.ForeignKey('LANGUAGE.id'), nullable=False)
     user_id = db.Column(db.ForeignKey('USER.id'), nullable=False)
 
-    language = db.relationship('LANGUAGE', primaryjoin='VERNACULAR.language_id == LANGUAGE.id', backref='vernaculars')
-    user = db.relationship('USER', primaryjoin='VERNACULAR.user_id == USER.id', backref='vernaculars')
+    #language = db.relationship('LANGUAGE', primaryjoin='VERNACULAR.language_id == LANGUAGE.id', backref='vernaculars')
+    #user = db.relationship('USER', primaryjoin='VERNACULAR.user_id == USER.id', backref='vernaculars')

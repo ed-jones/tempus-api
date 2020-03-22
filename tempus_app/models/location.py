@@ -12,4 +12,4 @@ class Location(db.Model):
     lat = db.Column(db.Float)
     lng = db.Column(db.Float)
 
-    tour = db.relationship('TOUR', primaryjoin='LOCATION.tour_id == TOUR.id', backref='locations')
+    # tour = db.relationship('TOUR', primaryjoin='LOCATION.tour_id == TOUR.id', backref='locations')
