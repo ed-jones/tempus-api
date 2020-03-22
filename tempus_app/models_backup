@@ -1,9 +1,8 @@
-# coding: utf-8
-from sqlalchemy import Column, Date, Float, ForeignKey, Integer, LargeBinary, String, Table, Text
-from sqlalchemy.schema import FetchedValue
-from sqlalchemy.orm import relationship
-from flask_sqlalchemy import SQLAlchemy
-from . import db
+# from sqlalchemy import Column, Date, Float, ForeignKey, Integer, LargeBinary, String, Table, Text
+# from sqlalchemy.schema import FetchedValue
+# from sqlalchemy.orm import relationship
+# from flask_sqlalchemy import SQLAlchemy
+# from . import db
 
 
 
@@ -54,17 +53,17 @@ from . import db
 
 #     tour = db.relationship('TOUR', primaryjoin='TOURIMAGE.tour_id == TOUR.id', backref='tourimages')
 
-class User(db.Model):
-    __tablename__ = 'USER'
+# class User(db.Model):
+#     __tablename__ = 'USER'
 
-    id = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
-    email = db.Column(db.String(60))
-    password = db.Column(db.String(60))
-    firstname = db.Column(db.String(32))
-    lastname = db.Column(db.String(32))
-    customer_rating = db.Column(db.Float)
-    guide_rating = db.Column(db.Float)
-    bio = db.Column(db.Text)
+#     id = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
+#     email = db.Column(db.String(60))
+#     password = db.Column(db.String(60))
+#     firstname = db.Column(db.String(32))
+#     lastname = db.Column(db.String(32))
+#     customer_rating = db.Column(db.Float)
+#     guide_rating = db.Column(db.Float)
+#     bio = db.Column(db.Text)
 
 
 # t_USER = db.Table(
