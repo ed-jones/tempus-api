@@ -32,11 +32,11 @@ POST: localhost:5000/get_user
 Returns:
 {
 	"email" : "johnsmith@example.com", 
-  "firstname" : "John", 
-  "lastname" : "Smith"
-  "customer_rating" : 0.76
-  "guide_rating" : 0.84
-  "bio" : "John is a local Sydneysider who loves to give tours of the National Park"
+ 	"firstname" : "John", 
+  	"lastname" : "Smith",
+  	"customer_rating" : 0.76,
+  	"guide_rating" : 0.84,
+  	"bio" : "John is a local Sydneysider who loves to give tours of the National Park"
 }
 
 ```
