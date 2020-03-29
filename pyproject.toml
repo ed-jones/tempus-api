@@ -14,6 +14,8 @@ python-dotenv = "^0.12.0"
 flask-wtf = "^0.14.3"
 flask-sqlacodegen = "^1.1.7"
 psycopg2 = "^2.8.4"
+flask-marshmallow = "^0.11.0"
+marshmallow-sqlalchemy = "^0.22.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
