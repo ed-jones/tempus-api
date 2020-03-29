@@ -124,14 +124,10 @@ class GetUser(Resource):
 
         user = User.query.filter_by(uuid=uuid)
 
-
         if (user):
             user.update(user_data)
             db.session.commit()
-
             return 'User successfully updated', 200
-
-            
         else:
             return 'User not found', 404
             
@@ -149,3 +145,19 @@ class GetUser(Resource):
             return 'User successfully deleted', 200
         else:
             return 'User not found', 404
+
+class LoginUser(Resource):
+    def post(self):
+        user_data = request.get_json()
+
+        user = User.query.filter_by(email=user_data["email"]).first()
+        
+        if (user.password == user_data["password"]):
+            return 'Successfully logged in', 200
+        else:
+            return 'Invalid username/password supplied', 400
+
+class LogoutUser(Resource):
+    def get(self):
+
+        return 'Successfully logged out', 200

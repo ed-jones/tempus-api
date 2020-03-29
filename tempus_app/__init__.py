@@ -29,5 +29,8 @@ from . import paths
 # Setup Routes
 api.add_resource(paths.AddUser, '/user/')
 api.add_resource(paths.GetUser, '/user/<string:uuid>')
+api.add_resource(paths.LoginUser, '/user/login')
+api.add_resource(paths.LogoutUser, '/user/logout')
+
 api.add_resource(paths.RecentTours, '/recent_tours')
 api.add_resource(paths.NearestTours, '/nearest_tours')
