@@ -42,8 +42,8 @@ class Tour(db.Model):
     title = db.Column(db.String(32))
     description = db.Column(db.Text)
     rating = db.Column(db.Float)
-    uuid = db.Column(UUID(as_uuid=True), unique=True, nullable=False)
-    upload_time = db.Column(db.DateTime)
+    uuid = db.Column(UUID(as_uuid=True), unique=True, nullable=False, server_default=db.FetchedValue())
+    upload_time = db.Column(db.DateTime, server_default=db.FetchedValue())
     price = db.Column(db.Float)
     duration = db.Column(db.Interval)
 

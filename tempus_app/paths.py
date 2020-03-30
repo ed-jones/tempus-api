@@ -1,91 +1,152 @@
-from tempus_app import tempus_app, models, api, db, schemas
+from tempus_app import tempus_app, api, db
 from flask_restful import reqparse, abort, Api, Resource
 from flask import jsonify, request
 from math import pi, sin, cos, atan2, sqrt
 from uuid import UUID
-from .models import User
-from .schemas import user_schema
+from .models import User, Tour
+from .schemas import user_schema, tour_schema
+from datetime import datetime, timedelta
 
-class NearestTours(Resource):
+
+class AddTour(Resource):
     def post(self):
+        tour_data = request.get_json()
+        new_tour = tour_schema.load(tour_data, session=db.session)
+        db.session.add(new_tour)
+        db.session.commit()
 
-        user_location = request.get_json()
-        user_lat = user_location['lat']
-        user_lng = user_location['lng']
+        return 'Done', 201
 
-        locations_model = models.Location.query.all()
-        locations_list = []
+class GetTour(Resource):
+    def get(self, uuid):
+        try:
+            UUID(uuid, version=1)
+        except ValueError:
+            return 'Invalid UUID supplied', 400
 
-        for location_model in locations_model:
-            tour = models.Tour.query.filter_by(id={location_model.tour_id}).first()
+        tour = Tour.query.filter_by(uuid=uuid).first()
 
-            locations_list.append({
-                "tour_id" : location_model.tour_id,
-                "distance" : distance(float(user_lat), float(user_lng), location_model.lat, location_model.lng),
-                })
-        
+        if (tour):
+            return tour_schema.dump(tour), 200
+        else:
+            return 'Tour not found', 404
 
+    def put(self, uuid):
+        tour_data = request.get_json()
 
-        # locations_list = sorted(locations_list, key=lambda k: k['distance'])
+        try:
+            UUID(uuid, version=1)
+        except ValueError:
+            return 'Invalid UUID supplied', 400
 
-        # nearest_tours = []
-        
-        # for location in locations_list:
-        #     nearest_tours.append(models.Tour.query.filter_by(title == location.tour_id))
+        tour = Tour.query.filter_by(uuid=uuid)
 
-        # tours_list = []
+        if (tour):
+            tour.update(tour_data)
+            db.session.commit()
+            return 'Tour successfully updated', 200
+        else:
+            return 'Tour not found', 404
 
-        # for nearest_tour in nearest_tours:
-        #     tours_list.append({
-        #         "uuid" : str(nearest_tour.uuid), 
-        #         "guide_id": nearest_tour.guide_id, 
-        #         "title" : nearest_tour.title, 
-        #         "description" : nearest_tour.description, 
-        #         "rating" : nearest_tour.rating,
-        #         "upload_time" : str(nearest_tour.upload_time),
-        #         "price" : nearest_tour.price,
-        #         "duration" : str(nearest_tour.duration)
-        #         })
+    def delete(self, uuid):
+        try:
+            UUID(uuid, version=1)
+        except ValueError:
+            return 'Invalid UUID supplied', 400
 
-        return tours_list
+        tour = Tour.query.filter_by(uuid=uuid)
 
+        if (tour.first()):
+            tour.delete()
+            db.session.commit()
+            return 'Tour successfully deleted', 200
+        else:
+            return 'Tour not found', 404
 
-def distance(lat1, lng1, lat2, lng2):
-    pi180 = pi / 180
-    lat1 *= pi180
-    lng1 *= pi180
-    lat2 *= pi180
-    lng2 *= pi180
-
-    r = 6378137
-    dlat = lat2 - lat1
-    dlng = lng2 - lng1
-    a = sin(dlat/2) * sin(dlat/2) + cos(lat1) * cos(lat2) * sin(dlng/2) * sin(dlng/2)
-    c = 2 * atan2(sqrt(a), sqrt(1 - a))
-    km = r * c
-
-    return km
-
-class RecentTours(Resource):
+class GetTours(Resource):
     def get(self):
+        return 'Done', 201
 
-        tours_model = models.Tour.query.order_by(models.Tour.upload_time)
-        tours_list = []
+# class NearestTours(Resource):
+#     def post(self):
 
-        for tour_model in tours_model:
-            tours_list.append({
-                "uuid" : str(tour_model.uuid), 
-                "guide_id": tour_model.guide_id, 
-                "title" : tour_model.title, 
-                "description" : tour_model.description, 
-                "rating" : tour_model.rating,
-                "upload_time" : str(tour_model.upload_time),
-                "price" : tour_model.price,
-                "duration" : str(tour_model.duration)
-                })
+#         user_location = request.get_json()
+#         user_lat = user_location['lat']
+#         user_lng = user_location['lng']
+
+#         locations_model = models.Location.query.all()
+#         locations_list = []
+
+#         for location_model in locations_model:
+#             tour = models.Tour.query.filter_by(id={location_model.tour_id}).first()
+
+#             locations_list.append({
+#                 "tour_id" : location_model.tour_id,
+#                 "distance" : distance(float(user_lat), float(user_lng), location_model.lat, location_model.lng),
+#                 })
+        
 
 
-        return tours_list
+#         # locations_list = sorted(locations_list, key=lambda k: k['distance'])
+
+#         # nearest_tours = []
+        
+#         # for location in locations_list:
+#         #     nearest_tours.append(models.Tour.query.filter_by(title == location.tour_id))
+
+#         # tours_list = []
+
+#         # for nearest_tour in nearest_tours:
+#         #     tours_list.append({
+#         #         "uuid" : str(nearest_tour.uuid), 
+#         #         "guide_id": nearest_tour.guide_id, 
+#         #         "title" : nearest_tour.title, 
+#         #         "description" : nearest_tour.description, 
+#         #         "rating" : nearest_tour.rating,
+#         #         "upload_time" : str(nearest_tour.upload_time),
+#         #         "price" : nearest_tour.price,
+#         #         "duration" : str(nearest_tour.duration)
+#         #         })
+
+#         return tours_list
+
+
+# def distance(lat1, lng1, lat2, lng2):
+#     pi180 = pi / 180
+#     lat1 *= pi180
+#     lng1 *= pi180
+#     lat2 *= pi180
+#     lng2 *= pi180
+
+#     r = 6378137
+#     dlat = lat2 - lat1
+#     dlng = lng2 - lng1
+#     a = sin(dlat/2) * sin(dlat/2) + cos(lat1) * cos(lat2) * sin(dlng/2) * sin(dlng/2)
+#     c = 2 * atan2(sqrt(a), sqrt(1 - a))
+#     km = r * c
+
+#     return km
+
+# class RecentTours(Resource):
+#     def get(self):
+
+#         tours_model = models.Tour.query.order_by(models.Tour.upload_time)
+#         tours_list = []
+
+#         for tour_model in tours_model:
+#             tours_list.append({
+#                 "uuid" : str(tour_model.uuid), 
+#                 "guide_id": tour_model.guide_id, 
+#                 "title" : tour_model.title, 
+#                 "description" : tour_model.description, 
+#                 "rating" : tour_model.rating,
+#                 "upload_time" : str(tour_model.upload_time),
+#                 "price" : tour_model.price,
+#                 "duration" : str(tour_model.duration)
+#                 })
+
+
+#         return tours_list
 
 
 class AddUser(Resource):

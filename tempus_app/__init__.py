@@ -32,5 +32,7 @@ api.add_resource(paths.GetUser, '/user/<string:uuid>')
 api.add_resource(paths.LoginUser, '/user/login')
 api.add_resource(paths.LogoutUser, '/user/logout')
 
-api.add_resource(paths.RecentTours, '/recent_tours')
-api.add_resource(paths.NearestTours, '/nearest_tours')
+api.add_resource(paths.AddTour, '/tour')
+api.add_resource(paths.GetTour, '/tour/<string:uuid>')
+api.add_resource(paths.GetTours, '/tours')
+
