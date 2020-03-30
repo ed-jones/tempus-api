@@ -1,0 +1,453 @@
+openapi: 3.0.0
+info:
+  title: Tempus Tours
+  version: 0.1.0
+  description: Connecting tour guides with customers
+  contact:
+    name: Ed
+    url: 'https://edjones.me'
+    email: contact@edjones.me
+servers:
+  - description: Local API
+    url: 'http://127.0.0.1:5000'
+paths:
+  '/user/{uuid}':
+    get:
+      tags:
+        - user
+      parameters:
+        - name: uuid
+          in: path
+          description: The UUID to be fetched
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                x-examples:
+                  Sarah Aston:
+                    uuid: 0ad3dcf2-6bf5-11ea-9677-560001b9120c
+                    bio: "I'm visiting Sydney for a month and I would like to see what it's all about!"
+                    email: sarahtaston@live.co.uk
+                    customer_rating: 0.4
+                    firstname: Sarah
+                    password: 'bw34%@0L'
+                    id: 10
+                    guide_rating: null
+                    lastname: Aston
+                title: ''
+                properties:
+                  id:
+                    type: integer
+                    format: int32
+                  uuid:
+                    type: string
+                  email:
+                    type: string
+                  password:
+                    type: string
+                  firstname:
+                    type: string
+                  lastname:
+                    type: string
+                  customer_rating:
+                    type: number
+                    format: float32
+                  guide_rating:
+                    type: number
+                    format: float32
+                  bio:
+                    type: string
+              examples: {}
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+      operationId: addUser
+      description: Get user by UUID
+      summary: Get user by uuid
+    put:
+      description: |-
+        Updates user by UUID
+        This can only be done by the logged in user.
+      operationId: updateUser
+      parameters:
+        - name: uuid
+          in: path
+          description: uuid of user that need to be updated
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User successfully updated
+        '400':
+          description: Invalid user supplied
+        '404':
+          description: User not found
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              x-examples:
+                Sarah Aston:
+                  uuid: 0ad3dcf2-6bf5-11ea-9677-560001b9120c
+                  bio: "I'm visiting Sydney for a month and I would like to see what it's all about!"
+                  email: sarahtaston@live.co.uk
+                  customer_rating: 0.4
+                  firstname: Sarah
+                  password: 'bw34%@0L'
+                  id: 10
+                  guide_rating: null
+                  lastname: Aston
+              title: ''
+              properties:
+                id:
+                  type: integer
+                  format: int32
+                uuid:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                firstname:
+                  type: string
+                lastname:
+                  type: string
+                customer_rating:
+                  type: number
+                  format: float32
+                guide_rating:
+                  type: number
+                  format: float32
+                bio:
+                  type: string
+        description: Updated user object
+        required: true
+      summary: Updated user
+      tags:
+        - user
+    delete:
+      tags:
+        - user
+      summary: Delete user
+      description: |-
+        Deletes the specified user by UUID.
+        This can only be done by the logged in user.
+      operationId: deleteUser
+      parameters:
+        - name: uuid
+          in: path
+          description: The name that needs to be deleted
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User successfully deleted
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+    parameters:
+      - schema:
+          type: string
+        name: uuid
+        in: path
+        required: true
+  /user/logout:
+    get:
+      tags:
+        - user
+      operationId: logoutUser
+      responses:
+        '200':
+          description: Successfully logged out
+      description: Logs out current logged in user session
+      summary: Logout User
+  /user/login:
+    post:
+      tags:
+        - user
+      description: Logs user into the system
+      parameters: []
+      responses:
+        '200':
+          description: Successfully logged in
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+            X-Expires-After:
+              description: date in UTC when token expires
+              schema:
+                type: string
+                format: date-time
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Invalid username/password supplied
+      operationId: loginUser
+      summary: Login User
+  /user:
+    post:
+      tags:
+        - user
+      summary: Create user
+      description: This can only be done by the logged in user.
+      operationId: createUser
+      responses:
+        '200':
+          description: successful operation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              x-examples:
+                Sarah Aston:
+                  uuid: 0ad3dcf2-6bf5-11ea-9677-560001b9120c
+                  bio: "I'm visiting Sydney for a month and I would like to see what it's all about!"
+                  email: sarahtaston@live.co.uk
+                  customer_rating: 0.4
+                  firstname: Sarah
+                  password: 'bw34%@0L'
+                  id: 10
+                  guide_rating: null
+                  lastname: Aston
+              title: ''
+              properties:
+                id:
+                  type: integer
+                  format: int32
+                uuid:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                firstname:
+                  type: string
+                lastname:
+                  type: string
+                customer_rating:
+                  type: number
+                  format: float32
+                guide_rating:
+                  type: number
+                  format: float32
+                bio:
+                  type: string
+        description: Created user object
+        required: true
+  /tours:
+    parameters: []
+    get:
+      summary: Get Tours
+      operationId: get-tours
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                title: Tour
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  guide_id:
+                    type: integer
+                  title:
+                    type: string
+                  description:
+                    type: string
+                  rating:
+                    type: number
+                  uuid:
+                    type: string
+                  upload_time:
+                    type: string
+                  price:
+                    type: number
+                  duration:
+                    type: string
+      description: Returns a list of tours given certain parameters
+      parameters:
+        - schema:
+            type: number
+            default: 10
+            maximum: 100
+            minimum: 0
+            exclusiveMaximum: true
+          in: query
+          name: 'no'
+          description: Number of tours in returned list
+        - schema:
+            type: string
+            enum:
+              - animals
+              - beaches
+              - cooking
+              - hiking
+              - group
+              - all
+            default: all
+          in: query
+          description: Tour category
+          name: category
+        - schema:
+            type: string
+            enum:
+              - distance
+              - age
+            maxLength: 0
+          in: query
+          name: orderby
+          description: ''
+      tags:
+        - tours
+  '/tour/{uuid}':
+    parameters:
+      - schema:
+          type: string
+        name: uuid
+        in: path
+        required: true
+    get:
+      summary: Get Tour By UUID
+      tags:
+        - tours
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                title: Tour
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  guide_id:
+                    type: integer
+                  title:
+                    type: string
+                  description:
+                    type: string
+                  rating:
+                    type: number
+                  uuid:
+                    type: string
+                  upload_time:
+                    type: string
+                  price:
+                    type: number
+                  duration:
+                    type: string
+      operationId: get-tour-uuid
+      description: Get tour details by UUID
+    put:
+      summary: ''
+      operationId: put-tour-uuid
+      responses:
+        '200':
+          description: OK
+      description: Update an existing tour by UUID
+      tags:
+        - tours
+    delete:
+      summary: ''
+      operationId: delete-tour-uuid
+      responses:
+        '200':
+          description: OK
+      description: Delete an existing tour by UUID
+      tags:
+        - tours
+  /tour:
+    post:
+      summary: Add tour
+      operationId: post-tour
+      responses:
+        '200':
+          description: OK
+      description: Add a tour
+      tags:
+        - tours
+components:
+  schemas:
+    User:
+      type: object
+      x-examples:
+        Sarah Aston:
+          uuid: 0ad3dcf2-6bf5-11ea-9677-560001b9120c
+          bio: "I'm visiting Sydney for a month and I would like to see what it's all about!"
+          email: sarahtaston@live.co.uk
+          customer_rating: 0.4
+          firstname: Sarah
+          password: 'bw34%@0L'
+          id: 10
+          guide_rating: null
+          lastname: Aston
+      title: ''
+      properties:
+        id:
+          type: integer
+          format: int32
+        uuid:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        firstname:
+          type: string
+        lastname:
+          type: string
+        customer_rating:
+          type: number
+          format: float32
+        guide_rating:
+          type: number
+          format: float32
+        bio:
+          type: string
+    Tour:
+      title: Tour
+      type: object
+      properties:
+        id:
+          type: integer
+        guide_id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        rating:
+          type: number
+        uuid:
+          type: string
+        upload_time:
+          type: string
+        price:
+          type: number
+        duration:
+          type: string
+tags:
+  - name: user
+    description: Operations about user
+  - name: tours
+    description: Operations related to tours

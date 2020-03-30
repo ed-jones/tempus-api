@@ -6,4 +6,4 @@ Run flask: `flask run`
 
 # API Documentation
 
-https://app.swaggerhub.com/apis-docs/ed-jones/tempus/0.1.0
+Please read `tempus_api.v1.yaml`
