@@ -386,6 +386,12 @@ paths:
       description: Add a tour
       tags:
         - tours
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tour'
+        description: ''
 components:
   schemas:
     User:
@@ -408,10 +414,13 @@ components:
           format: int32
         uuid:
           type: string
+          format: uuid
         email:
           type: string
+          format: email
         password:
           type: string
+          format: password
         firstname:
           type: string
         lastname:
@@ -424,14 +433,18 @@ components:
           format: float32
         bio:
           type: string
+      x-tags:
+        - user
     Tour:
       title: Tour
       type: object
+      x-examples: {}
+      x-tags:
+        - tours
       properties:
-        id:
-          type: integer
         guide_id:
-          type: integer
+          type: string
+          format: uuid
         title:
           type: string
         description:
@@ -440,12 +453,74 @@ components:
           type: number
         uuid:
           type: string
+          format: uuid
         upload_time:
           type: string
+          format: date-time
         price:
           type: number
         duration:
           type: string
+          format: date-time
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/TourImage'
+        locations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Location'
+        category:
+          type: array
+          enum:
+            - ANIMALS
+            - BEACH
+            - CITY
+            - FOOD AND DRINK
+            - HIKING
+          items:
+            type: string
+    TourImage:
+      title: TourImage
+      type: object
+      x-tags:
+        - tours
+      properties:
+        id:
+          type: integer
+        tour_id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        date:
+          type: string
+          format: date
+        image:
+          type: string
+          format: binary
+        primary:
+          type: boolean
+    Location:
+      title: Location
+      type: object
+      properties:
+        id:
+          type: integer
+        tour_id:
+          type: string
+        name:
+          type: string
+        address:
+          type: string
+        lat:
+          type: number
+        lng:
+          type: number
+      x-tags:
+        - tours
+      description: ''
 tags:
   - name: user
     description: Operations about user

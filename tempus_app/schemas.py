@@ -16,6 +16,7 @@ class UserSchema(SQLAlchemySchema):
     firstname = auto_field()
     customer_rating = auto_field()
     guide_rating = auto_field()
+    mobile = auto_field()
     bio = auto_field()
 
 user_schema = UserSchema()

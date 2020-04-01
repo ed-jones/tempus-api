@@ -1,73 +1,120 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import UUID
+from uuid import uuid4
 from tempus_app import db
-
+from datetime import datetime
+import enum
 
 class Language(db.Model):
     __tablename__ = 'LANGUAGE'
 
-    id = db.Column(db.String(5), primary_key=True, server_default=db.FetchedValue())
-    name = db.Column(db.String(32))
+    id = db.Column(db.String(5), primary_key=True, nullable=False)
+    name = db.Column(db.String(32), nullable=False)
 
+class TourLocation(db.Model):
+    __tablename__ = 'TOUR_LOCATION'
 
-class Location(db.Model):
-    __tablename__ = 'LOCATION'
-
-    id = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
-    tour_id = db.Column(db.ForeignKey('TOUR.id'))
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    tour_id = db.Column(db.ForeignKey('TOUR.uuid'), nullable=False)
     name = db.Column(db.String(60))
     address = db.Column(db.String(60))
-    lat = db.Column(db.Float)
-    lng = db.Column(db.Float)
-
-    # tour = db.relationship('TOUR', primaryjoin='LOCATION.tour_id == TOUR.id', backref='locations')
+    lat = db.Column(db.Float, nullable=False)
+    lng = db.Column(db.Float, nullable=False)
 
 class TourImage(db.Model):
     __tablename__ = 'TOUR_IMAGE'
+    __table_args__ = (db.UniqueConstraint('primary', 'tour_id', name="primary_image_constraint"),)
 
-    id = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
-    tour_id = db.Column(db.ForeignKey('TOUR.id'))
-    title = db.Column(db.String(32))
-    description = db.Column(db.Text)
-    date = db.Column(db.Date)
-    image = db.Column(db.LargeBinary)
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    tour_id = db.Column(db.ForeignKey('TOUR.uuid'), nullable=False)
+    title = db.Column(db.String(32), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    date = db.Column(db.Date, nullable=False)
+    image = db.Column(db.LargeBinary, nullable=False)
+    primary = db.Column(db.Boolean)
 
-    # tour = db.relationship('TOUR', primaryjoin='TOUR_IMAGE.tour_id == TOUR.id', backref='tourimages')
+class TourCategory(enum.Enum):
+    ANIMALS = "Animals"
+    BEACH = "Beach"
+    FOODANDDRINK = "Food and Drink"
+    HIKING = "Hiking"
+    CITY = "City"
 
 class Tour(db.Model):
     __tablename__ = 'TOUR'
 
-    id = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
-    guide_id = db.Column(db.ForeignKey('USER.id'))
-    title = db.Column(db.String(32))
+    uuid = db.Column(UUID(as_uuid=True), unique=True, nullable=False, primary_key=True, default=uuid4)
+    guide_id = db.Column(db.ForeignKey('USER.uuid'), nullable=False)
+    title = db.Column(db.String(64), nullable=False)
     description = db.Column(db.Text)
     rating = db.Column(db.Float)
-    uuid = db.Column(UUID(as_uuid=True), unique=True, nullable=False, server_default=db.FetchedValue())
-    upload_time = db.Column(db.DateTime, server_default=db.FetchedValue())
-    price = db.Column(db.Float)
-    duration = db.Column(db.Interval)
-
-    # guide = db.relationship('USER', primaryjoin='TOUR.guide_id == USER.id', backref='tours')
+    upload_time = db.Column(db.DateTime, default=datetime.now)
+    price = db.Column(db.Float, nullable=False)
+    duration = db.Column(db.Interval, nullable=False)
+    category = db.Column(db.ARRAY(db.Enum(TourCategory)), nullable=False)
 
 class User(db.Model):
     __tablename__ = 'USER'
 
-    id = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
-    uuid = db.Column(UUID(as_uuid=True), unique=True, nullable=False, server_default=db.FetchedValue())
-    email = db.Column(db.String(60))
-    password = db.Column(db.String(60))
-    firstname = db.Column(db.String(32))
-    lastname = db.Column(db.String(32))
+    uuid = db.Column(UUID(as_uuid=True), nullable=False, primary_key=True, default=uuid4)
+    email = db.Column(db.String(60), nullable=False, unique=True)
+    password = db.Column(db.String(60), nullable=False)
+    firstname = db.Column(db.String(32), nullable=False)
+    lastname = db.Column(db.String(32), nullable=False)
+    dob = db.Column(db.Date, nullable=False)
+    mobile = db.Column(db.String(15))
     customer_rating = db.Column(db.Float)
     guide_rating = db.Column(db.Float)
     bio = db.Column(db.Text)
+    photo = db.Column(db.LargeBinary)
+    url = db.Column(db.String(60))
+
+class EmergencyContact(db.Model):
+    __tablename__ = 'EMERGENCY_CONTACT'
+
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    user_id = db.Column(db.ForeignKey('USER.uuid'), nullable=False)
+    firstname = db.Column(db.String(32))
+    lastname = db.Column(db.String(32))
+    homephone = db.Column(db.String(32))
+    mobilephone = db.Column(db.String(32))
+    workphone = db.Column(db.String(32))
+    address = db.Column(db.Text)
 
 class Vernacular(db.Model):
     __tablename__ = 'VERNACULAR'
 
-    id = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
     language_id = db.Column(db.ForeignKey('LANGUAGE.id'), nullable=False)
-    user_id = db.Column(db.ForeignKey('USER.id'), nullable=False)
+    user_id = db.Column(db.ForeignKey('USER.uuid'), nullable=False)
 
-    #language = db.relationship('LANGUAGE', primaryjoin='VERNACULAR.language_id == LANGUAGE.id', backref='vernaculars')
-    #user = db.relationship('USER', primaryjoin='VERNACULAR.user_id == USER.id', backref='vernaculars')
+class TourDate(db.Model):
+    __tablename__ = 'TOUR_DATE'
+
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    tour_id = db.Column(db.ForeignKey('TOUR.uuid'), nullable=False)
+    tour_datetime = db.Column(db.DateTime, nullable=False)
+
+class Currency(db.Model):
+    __tablename__ = 'CURRENCY'
+
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    currency_name = db.Column(db.Text, nullable=False)
+    entity = db.Column(db.Text, nullable=False)
+    alpha_code = db.Column(db.String(10))
+    num_code = db.Column(db.Integer)
+
+class ReviewType(enum.Enum):
+    GUIDE = "Guide"
+    CUSTOMER = "Customer"
+
+class Reviews(db.Model):
+    __tablename__ = 'REVIEWS'
+    
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    reviewer_id = db.Column(db.ForeignKey('USER.uuid'), nullable=False)
+    reviewee_id = db.Column(db.ForeignKey('USER.uuid'), nullable=False)
+    tour_id = db.Column(db.ForeignKey('TOUR.uuid'), nullable=False)
+    review_type = db.Column(db.Enum(ReviewType), nullable=False)
+    rating = db.Column(db.Float, nullable=False)
+    comment = db.Column(db.Text)

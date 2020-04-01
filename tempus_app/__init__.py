@@ -5,6 +5,7 @@ from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api
 from flask_marshmallow import Marshmallow 
+from flask_migrate import Migrate
 
 
 # Setup App
@@ -17,6 +18,7 @@ api = Api(tempus_app)
 # Setup DB
 db = SQLAlchemy()
 db.init_app(tempus_app)
+migrate = Migrate(tempus_app, db)
 
 
 # Setup Marshmallow

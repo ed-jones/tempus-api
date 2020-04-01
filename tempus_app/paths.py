@@ -1,12 +1,13 @@
 from tempus_app import tempus_app, api, db
-from flask_restful import reqparse, abort, Api, Resource
 from flask import jsonify, request
+from flask_restful import reqparse, abort, Api, Resource
+
 from math import pi, sin, cos, atan2, sqrt
+from datetime import datetime, timedelta
 from uuid import UUID
+
 from .models import User, Tour
 from .schemas import user_schema, tour_schema
-from datetime import datetime, timedelta
-
 
 class AddTour(Resource):
     def post(self):
