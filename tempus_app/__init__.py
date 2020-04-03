@@ -6,6 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api
 from flask_marshmallow import Marshmallow 
 from flask_migrate import Migrate
+from flask_bcrypt import Bcrypt
 
 
 # Setup App
@@ -20,6 +21,8 @@ db = SQLAlchemy()
 db.init_app(tempus_app)
 migrate = Migrate(tempus_app, db)
 
+# Setup BCrypt
+bcrypt = Bcrypt(tempus_app)
 
 # Setup Marshmallow
 ma = Marshmallow(tempus_app)

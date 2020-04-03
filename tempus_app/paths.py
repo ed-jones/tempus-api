@@ -1,4 +1,4 @@
-from tempus_app import tempus_app, api, db
+from tempus_app import tempus_app, api, db, bcrypt
 from flask import jsonify, request
 from flask_restful import reqparse, abort, Api, Resource
 
@@ -153,6 +153,7 @@ class GetTours(Resource):
 class AddUser(Resource):
     def post(self):
         user_data = request.get_json()
+        user_data["password"] = bcrypt.generate_password_hash(user_data["password"])
         new_user = user_schema.load(user_data, session=db.session)
 
         db.session.add(new_user)
@@ -214,7 +215,7 @@ class LoginUser(Resource):
 
         user = User.query.filter_by(email=user_data["email"]).first()
         
-        if (user.password == user_data["password"]):
+        if (bcrypt.check_password_hash(user.password, user_data["password"])):
             return 'Successfully logged in', 200
         else:
             return 'Invalid username/password supplied', 400
