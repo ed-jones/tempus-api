@@ -64,10 +64,14 @@ class User(db.Model):
     dob = db.Column(db.Date, nullable=False)
     mobile = db.Column(db.String(15))
     customer_rating = db.Column(db.Float)
+    customer_rating_count = db.Column(db.Integer, default=0)
     guide_rating = db.Column(db.Float)
+    guide_rating_count = db.Column(db.Integer, default=0)
     bio = db.Column(db.Text)
     photo = db.Column(db.LargeBinary)
     url = db.Column(db.String(60))
+    date_created = db.Column(db.DateTime, default=datetime.now)
+    location = db.Column(db.Text)
 
 class EmergencyContact(db.Model):
     __tablename__ = 'EMERGENCY_CONTACT'
@@ -81,8 +85,8 @@ class EmergencyContact(db.Model):
     workphone = db.Column(db.String(32))
     address = db.Column(db.Text)
 
-class Vernacular(db.Model):
-    __tablename__ = 'VERNACULAR'
+class UserXLanguage(db.Model):
+    __tablename__ = 'USER_X_LANGUAGE'
 
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     language_id = db.Column(db.ForeignKey('LANGUAGE.id'), nullable=False)
@@ -108,9 +112,9 @@ class ReviewType(enum.Enum):
     GUIDE = "Guide"
     CUSTOMER = "Customer"
 
-class Reviews(db.Model):
-    __tablename__ = 'REVIEWS'
-    
+class Review(db.Model):
+    __tablename__ = 'REVIEW'
+
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     reviewer_id = db.Column(db.ForeignKey('USER.uuid'), nullable=False)
     reviewee_id = db.Column(db.ForeignKey('USER.uuid'), nullable=False)

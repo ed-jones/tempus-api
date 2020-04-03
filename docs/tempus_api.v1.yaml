@@ -28,41 +28,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                x-examples:
-                  Sarah Aston:
-                    uuid: 0ad3dcf2-6bf5-11ea-9677-560001b9120c
-                    bio: "I'm visiting Sydney for a month and I would like to see what it's all about!"
-                    email: sarahtaston@live.co.uk
-                    customer_rating: 0.4
-                    firstname: Sarah
-                    password: 'bw34%@0L'
-                    id: 10
-                    guide_rating: null
-                    lastname: Aston
-                title: ''
-                properties:
-                  id:
-                    type: integer
-                    format: int32
-                  uuid:
-                    type: string
-                  email:
-                    type: string
-                  password:
-                    type: string
-                  firstname:
-                    type: string
-                  lastname:
-                    type: string
-                  customer_rating:
-                    type: number
-                    format: float32
-                  guide_rating:
-                    type: number
-                    format: float32
-                  bio:
-                    type: string
+                $ref: '#/components/schemas/User'
               examples: {}
         '400':
           description: Invalid username supplied
@@ -94,41 +60,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              x-examples:
-                Sarah Aston:
-                  uuid: 0ad3dcf2-6bf5-11ea-9677-560001b9120c
-                  bio: "I'm visiting Sydney for a month and I would like to see what it's all about!"
-                  email: sarahtaston@live.co.uk
-                  customer_rating: 0.4
-                  firstname: Sarah
-                  password: 'bw34%@0L'
-                  id: 10
-                  guide_rating: null
-                  lastname: Aston
-              title: ''
-              properties:
-                id:
-                  type: integer
-                  format: int32
-                uuid:
-                  type: string
-                email:
-                  type: string
-                password:
-                  type: string
-                firstname:
-                  type: string
-                lastname:
-                  type: string
-                customer_rating:
-                  type: number
-                  format: float32
-                guide_rating:
-                  type: number
-                  format: float32
-                bio:
-                  type: string
+              $ref: '#/components/schemas/User'
         description: Updated user object
         required: true
       summary: Updated user
@@ -214,41 +146,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              x-examples:
-                Sarah Aston:
-                  uuid: 0ad3dcf2-6bf5-11ea-9677-560001b9120c
-                  bio: "I'm visiting Sydney for a month and I would like to see what it's all about!"
-                  email: sarahtaston@live.co.uk
-                  customer_rating: 0.4
-                  firstname: Sarah
-                  password: 'bw34%@0L'
-                  id: 10
-                  guide_rating: null
-                  lastname: Aston
-              title: ''
-              properties:
-                id:
-                  type: integer
-                  format: int32
-                uuid:
-                  type: string
-                email:
-                  type: string
-                password:
-                  type: string
-                firstname:
-                  type: string
-                lastname:
-                  type: string
-                customer_rating:
-                  type: number
-                  format: float32
-                guide_rating:
-                  type: number
-                  format: float32
-                bio:
-                  type: string
+              $ref: '#/components/schemas/User'
         description: Created user object
         required: true
   /tours:
@@ -263,26 +161,9 @@ paths:
             application/json:
               schema:
                 title: Tour
-                type: object
-                properties:
-                  id:
-                    type: integer
-                  guide_id:
-                    type: integer
-                  title:
-                    type: string
-                  description:
-                    type: string
-                  rating:
-                    type: number
-                  uuid:
-                    type: string
-                  upload_time:
-                    type: string
-                  price:
-                    type: number
-                  duration:
-                    type: string
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tour'
       description: Returns a list of tours given certain parameters
       parameters:
         - schema:
@@ -295,7 +176,7 @@ paths:
           name: 'no'
           description: Number of tours in returned list
         - schema:
-            type: string
+            type: array
             enum:
               - animals
               - beaches
@@ -308,14 +189,67 @@ paths:
           description: Tour category
           name: category
         - schema:
-            type: string
+            type: array
             enum:
               - distance
+              - rating
               - age
+              - duration
+              - price
             maxLength: 0
           in: query
           name: orderby
-          description: ''
+          description: Criteria to order the returned list by
+        - schema:
+            type: number
+          in: query
+          name: max_distance
+          description: The maximum distance to get results for (km)
+        - schema:
+            type: number
+          in: query
+          name: min_distance
+          description: The maximum distance to get results for (km)
+        - schema:
+            type: number
+          in: query
+          name: max_rating
+          description: The maximum rating to get results for
+        - schema:
+            type: number
+          in: query
+          name: min_rating
+          description: The minimum rating to get results for
+        - schema:
+            type: integer
+          in: query
+          name: max_age
+          description: The maximum age to get results for (days)
+        - schema:
+            type: integer
+          in: query
+          name: min_age
+          description: The minimum age to get results for (days)
+        - schema:
+            type: integer
+          in: query
+          name: max_duration
+          description: The maximum duration to get results for (minutes)
+        - schema:
+            type: integer
+          in: query
+          name: min_duration
+          description: The minimum duration to get results for (minutes)
+        - schema:
+            type: number
+          in: query
+          name: max_price
+          description: The maximum price to get results for
+        - schema:
+            type: number
+          in: query
+          name: min_price
+          description: The minimum price to get results for
       tags:
         - tours
   '/tour/{uuid}':
@@ -335,27 +269,9 @@ paths:
           content:
             application/json:
               schema:
-                title: Tour
-                type: object
-                properties:
-                  id:
-                    type: integer
-                  guide_id:
-                    type: integer
-                  title:
-                    type: string
-                  description:
-                    type: string
-                  rating:
-                    type: number
-                  uuid:
-                    type: string
-                  upload_time:
-                    type: string
-                  price:
-                    type: number
-                  duration:
-                    type: string
+                $ref: '#/components/schemas/Tour'
+              examples:
+                example-1: {}
       operationId: get-tour-uuid
       description: Get tour details by UUID
     put:
@@ -367,6 +283,11 @@ paths:
       description: Update an existing tour by UUID
       tags:
         - tours
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tour'
     delete:
       summary: ''
       operationId: delete-tour-uuid
@@ -376,6 +297,7 @@ paths:
       description: Delete an existing tour by UUID
       tags:
         - tours
+      requestBody: {}
   /tour:
     post:
       summary: Add tour
@@ -396,25 +318,15 @@ components:
   schemas:
     User:
       type: object
-      x-examples:
-        Sarah Aston:
-          uuid: 0ad3dcf2-6bf5-11ea-9677-560001b9120c
-          bio: "I'm visiting Sydney for a month and I would like to see what it's all about!"
-          email: sarahtaston@live.co.uk
-          customer_rating: 0.4
-          firstname: Sarah
-          password: 'bw34%@0L'
-          id: 10
-          guide_rating: null
-          lastname: Aston
+      x-examples: {}
       title: ''
+      x-tags:
+        - user
       properties:
-        id:
-          type: integer
-          format: int32
         uuid:
           type: string
-          format: uuid
+          default: uuid_generate_v1()
+          format: int32
         email:
           type: string
           format: email
@@ -425,16 +337,41 @@ components:
           type: string
         lastname:
           type: string
+        dob:
+          type: string
+        mobile:
+          type: string
         customer_rating:
           type: number
-          format: float32
+        customer_rating_count:
+          type: integer
         guide_rating:
           type: number
-          format: float32
+        guide_rating_count:
+          type: integer
         bio:
           type: string
-      x-tags:
-        - user
+        photo:
+          type: string
+        url:
+          type: string
+        date_created:
+          type: string
+        location:
+          type: string
+        languages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Language'
+        emergency_contacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/EmergencyContact'
+      required:
+        - email
+        - password
+        - firstname
+        - lastname
     Tour:
       title: Tour
       type: object
@@ -462,14 +399,6 @@ components:
         duration:
           type: string
           format: date-time
-        images:
-          type: array
-          items:
-            $ref: '#/components/schemas/TourImage'
-        locations:
-          type: array
-          items:
-            $ref: '#/components/schemas/Location'
         category:
           type: array
           enum:
@@ -480,6 +409,14 @@ components:
             - HIKING
           items:
             type: string
+        tour_location:
+          type: array
+          items:
+            $ref: '#/components/schemas/TourLocation'
+        tour_image:
+          type: array
+          items:
+            $ref: '#/components/schemas/TourImage'
     TourImage:
       title: TourImage
       type: object
@@ -502,7 +439,7 @@ components:
           format: binary
         primary:
           type: boolean
-    Location:
+    TourLocation:
       title: Location
       type: object
       properties:
@@ -520,6 +457,76 @@ components:
           type: number
       x-tags:
         - tours
+      description: ''
+    Language:
+      title: Language
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+      x-tags:
+        - language
+    EmergencyContact:
+      title: EmergencyContact
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: string
+        firstname:
+          type: string
+        lastname:
+          type: string
+        homephone:
+          type: string
+        mobilephone:
+          type: string
+        workphone:
+          type: string
+        address:
+          type: string
+      x-tags:
+        - user
+    Currency:
+      title: Currency
+      type: object
+      properties:
+        id:
+          type: integer
+        currency_name:
+          type: string
+        entity:
+          type: string
+        alpha_code:
+          type: string
+        num_code:
+          type: integer
+    Review:
+      title: Review
+      type: object
+      properties:
+        id:
+          type: string
+        reviewer_id:
+          type: string
+        reviewee_id:
+          type: string
+        tour_id:
+          type: string
+        review_type:
+          type: string
+          enum:
+            - GUIDE
+            - CUSTOMER
+        rating:
+          type: number
+        comment:
+          type: string
+      x-tags:
+        - review
       description: ''
 tags:
   - name: user
