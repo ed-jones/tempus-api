@@ -528,6 +528,10 @@ components:
       x-tags:
         - review
       description: ''
+  securitySchemes:
+    API Key - 1:
+      type: http
+      scheme: basic
 tags:
   - name: user
     description: Operations about user

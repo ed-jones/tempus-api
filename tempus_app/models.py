@@ -11,6 +11,8 @@ class Language(db.Model):
     id = db.Column(db.String(5), primary_key=True, nullable=False)
     name = db.Column(db.String(32), nullable=False)
 
+    languages = db.relationship("UserXLanguage", back_populates="language")
+
 class TourLocation(db.Model):
     __tablename__ = 'TOUR_LOCATION'
 
@@ -73,6 +75,9 @@ class User(db.Model):
     date_created = db.Column(db.DateTime, default=datetime.now)
     location = db.Column(db.Text)
 
+    languages = db.relationship("UserXLanguage", back_populates="user")
+    emergency_contacts = db.relationship("EmergencyContact", back_populates="user")
+
 class EmergencyContact(db.Model):
     __tablename__ = 'EMERGENCY_CONTACT'
 
@@ -85,12 +90,17 @@ class EmergencyContact(db.Model):
     workphone = db.Column(db.String(32))
     address = db.Column(db.Text)
 
+    user = db.relationship("User", back_populates="emergency_contacts")
+
 class UserXLanguage(db.Model):
     __tablename__ = 'USER_X_LANGUAGE'
 
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     language_id = db.Column(db.ForeignKey('LANGUAGE.id'), nullable=False)
     user_id = db.Column(db.ForeignKey('USER.uuid'), nullable=False)
+
+    user = db.relationship("User", back_populates="languages")
+    language = db.relationship("Language", back_populates="languages")
 
 class TourDate(db.Model):
     __tablename__ = 'TOUR_DATE'

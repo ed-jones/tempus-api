@@ -141,6 +141,23 @@ Flask = ">=0.9"
 
 [[package]]
 category = "main"
+description = "Extended JWT integration with Flask"
+name = "flask-jwt-extended"
+optional = false
+python-versions = "*"
+version = "3.24.1"
+
+[package.dependencies]
+Flask = ">=1.0"
+PyJWT = ">=1.6.4"
+Werkzeug = ">=0.14"
+six = "*"
+
+[package.extras]
+asymmetric_crypto = ["cryptography (>=2.3)"]
+
+[[package]]
+category = "main"
 description = "Flask + marshmallow for beautiful APIs"
 name = "flask-marshmallow"
 optional = false
@@ -405,6 +422,19 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "2.20"
 
 [[package]]
+category = "main"
+description = "JSON Web Token implementation in Python"
+name = "pyjwt"
+optional = false
+python-versions = "*"
+version = "1.7.1"
+
+[package.extras]
+crypto = ["cryptography (>=1.4)"]
+flake8 = ["flake8", "flake8-import-order", "pep8-naming"]
+test = ["pytest (>=4.0.1,<5.0.0)", "pytest-cov (>=2.6.0,<3.0.0)", "pytest-runner (>=4.2,<5.0.0)"]
+
+[[package]]
 category = "dev"
 description = "Python parsing module"
 name = "pyparsing"
@@ -549,7 +579,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "8f2559679565c5398a930ed7d940226613ea36d5dbf09edd692efae45e2b67d8"
+content-hash = "497edda1b5112086ae235480a512afbf169d6938f16d40c27aed6ea8aa17078f"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -638,6 +668,9 @@ flask-bcrypt = [
 ]
 flask-classy = [
     {file = "Flask-Classy-0.6.10.tar.gz", hash = "sha256:13c9b4312bff2bf5c6c45ba7d6da46d6bd81724dfc45b598f12438c230583aab"},
+]
+flask-jwt-extended = [
+    {file = "Flask-JWT-Extended-3.24.1.tar.gz", hash = "sha256:0aa8ee6fa7eb3be9314e39dd199ac8e19389a95371f9d54e155c7aa635e319dd"},
 ]
 flask-marshmallow = [
     {file = "flask-marshmallow-0.11.0.tar.gz", hash = "sha256:01520ef1851ccb64d4ffb33196cddff895cc1302ae1585bff1abf58684a8111a"},
@@ -764,6 +797,10 @@ pycodestyle = [
 pycparser = [
     {file = "pycparser-2.20-py2.py3-none-any.whl", hash = "sha256:7582ad22678f0fcd81102833f60ef8d0e57288b6b5fb00323d101be910e35705"},
     {file = "pycparser-2.20.tar.gz", hash = "sha256:2d475327684562c3a96cc71adf7dc8c4f0565175cf86b6d7a404ff4c771f15f0"},
+]
+pyjwt = [
+    {file = "PyJWT-1.7.1-py2.py3-none-any.whl", hash = "sha256:5c6eca3c2940464d106b99ba83b00c6add741c9becaec087fb7ccdefea71350e"},
+    {file = "PyJWT-1.7.1.tar.gz", hash = "sha256:8d59a976fb773f3e6a39c85636357c4f0e242707394cadadd9814f5cbaa20e96"},
 ]
 pyparsing = [
     {file = "pyparsing-2.4.6-py2.py3-none-any.whl", hash = "sha256:c342dccb5250c08d45fd6f8b4a559613ca603b57498511740e65cd11a2e7dcec"},

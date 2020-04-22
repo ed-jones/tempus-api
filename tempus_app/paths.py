@@ -1,18 +1,17 @@
 from tempus_app import tempus_app, api, db, bcrypt
 from flask import jsonify, request
-from flask_restful import reqparse, abort, Api, Resource
+from flask_restful import abort, Api, Resource
 
 from math import pi, sin, cos, atan2, sqrt
 from datetime import datetime, timedelta
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from .models import User, Tour
-from .schemas import user_schema, tour_schema
+from .schemas import user_schema, tour_schema, login_schema, user_x_language_schema
 
 class AddTour(Resource):
     def post(self):
-        tour_data = request.get_json()
-        new_tour = tour_schema.load(tour_data, session=db.session)
+        new_tour = tour_schema.load(request.get_json())
         db.session.add(new_tour)
         db.session.commit()
 
@@ -23,46 +22,48 @@ class GetTour(Resource):
         try:
             UUID(uuid, version=1)
         except ValueError:
-            return 'Invalid UUID supplied', 400
+            abort(400, message="Invalid UUID Supplied")
 
         tour = Tour.query.filter_by(uuid=uuid).first()
 
-        if (tour):
-            return tour_schema.dump(tour), 200
-        else:
-            return 'Tour not found', 404
+        if (not tour):
+            abort(400, message="Tour not found")
+
+        return tour_schema.dump(tour), 200
 
     def put(self, uuid):
-        tour_data = request.get_json()
+        tour_data = tour_schema.load(request.get_json())
 
         try:
             UUID(uuid, version=1)
         except ValueError:
-            return 'Invalid UUID supplied', 400
+            abort(400, message="Invalid UUID Supplied")
 
         tour = Tour.query.filter_by(uuid=uuid)
 
-        if (tour):
-            tour.update(tour_data)
-            db.session.commit()
-            return 'Tour successfully updated', 200
-        else:
-            return 'Tour not found', 404
+        if (not tour):
+            abort(404, message="Tour not found") 
+
+        tour.update(tour_data)
+        db.session.commit()
+        return 'Tour successfully updated', 200
+
 
     def delete(self, uuid):
         try:
             UUID(uuid, version=1)
         except ValueError:
-            return 'Invalid UUID supplied', 400
+            abort(400, "Invalid UUID Supplied") 
 
         tour = Tour.query.filter_by(uuid=uuid)
 
-        if (tour.first()):
-            tour.delete()
-            db.session.commit()
-            return 'Tour successfully deleted', 200
-        else:
-            return 'Tour not found', 404
+        if (not tour.first()):
+            abort(404, message="Tour not found")
+
+        tour.delete()
+        db.session.commit()
+        return 'Tour successfully deleted', 200
+
 
 class GetTours(Resource):
     def get(self):
@@ -152,11 +153,23 @@ class GetTours(Resource):
 
 class AddUser(Resource):
     def post(self):
-        user_data = request.get_json()
-        user_data["password"] = bcrypt.generate_password_hash(user_data["password"])
-        new_user = user_schema.load(user_data, session=db.session)
+        user_id = uuid4()
 
+        user_data = request.get_json()
+        # languages_data = user_data['languages']
+
+        # user_data.pop('languages')
+        user_data['uuid'] = user_id
+        user_data['password'] = bcrypt.generate_password_hash(user_data['password'])
+        new_user = user_schema.load(user_data)
         db.session.add(new_user)
+
+
+        # for language_data in languages_data:
+        #     language_data['user_id'] = user_id
+        #     new_language_relation = user_x_language_schema.load(language_data)
+        #     db.session.add(new_language_relation)
+
         db.session.commit()
 
         return 'Done', 201
@@ -167,58 +180,61 @@ class GetUser(Resource):
         try:
             UUID(uuid, version=1)
         except ValueError:
-            return 'Invalid username supplied', 400
+            abort(400, message="Invalid UUID Supplied")
 
         user = User.query.filter_by(uuid=uuid).first()
 
-        if (user):
-            return user_schema.dump(user), 200
-        else:
-            return 'User not found', 404
+        if (not user):
+            abort(404, message="User not found")
+
+        return user_schema.dump(user), 200
+
 
     def put(self, uuid):
 
-        user_data = request.get_json()
+        user_data = user_schema.load(request.get_json())
 
         try:
             UUID(uuid, version=1)
         except ValueError:
-            return 'Invalid username supplied', 400
+            abort(400, message="Invalid UUID Supplied")
 
         user = User.query.filter_by(uuid=uuid)
 
-        if (user):
-            user.update(user_data)
-            db.session.commit()
-            return 'User successfully updated', 200
-        else:
-            return 'User not found', 404
+        if (not user):
+            abort(404, message="User not found")
+
+        user.update(user_data)
+        db.session.commit()
+        return 'User successfully updated', 200
             
     def delete(self, uuid):
         try:
             UUID(uuid, version=1)
         except ValueError:
-            return 'Invalid username supplied', 400
+            abort(400, message="Invalid UUID Supplied")
 
         user = User.query.filter_by(uuid=uuid)
 
-        if (user.first()):
-            user.delete()
-            db.session.commit()
-            return 'User successfully deleted', 200
-        else:
-            return 'User not found', 404
+        if (not user.first()):
+            abort(400, message="User not found")
+
+        user.delete()
+        db.session.commit()
+
+        return 'User successfully deleted', 200
+
 
 class LoginUser(Resource):
     def post(self):
-        user_data = request.get_json()
+        user_data = login_schema.load(request.get_json())
 
-        user = User.query.filter_by(email=user_data["email"]).first()
-        
-        if (bcrypt.check_password_hash(user.password, user_data["password"])):
-            return 'Successfully logged in', 200
-        else:
-            return 'Invalid username/password supplied', 400
+        user = User.query.filter_by(email=user_data.email).first()
+
+        if (not user or not bcrypt.check_password_hash(user.password, user_data.password)):
+            abort(400, message="Invalid username/password supplied")
+
+        return 'Successfully logged in', 200
 
 class LogoutUser(Resource):
     def get(self):
