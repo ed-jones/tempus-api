@@ -1,13 +1,14 @@
 from tempus_app import tempus_app, api, db, bcrypt
 from flask import jsonify, request
 from flask_restful import abort, Api, Resource
+from sqlalchemy import asc, desc
 
 from math import pi, sin, cos, atan2, sqrt
 from datetime import datetime, timedelta
 from uuid import UUID, uuid4
 
 from .models import User, Tour
-from .schemas import user_schema, tour_schema, login_schema, user_x_language_schema
+from .schemas import user_schema, tour_schema, tours_schema, login_schema, user_x_language_schema
 
 class AddTour(Resource):
     def post(self):
@@ -16,6 +17,7 @@ class AddTour(Resource):
         db.session.commit()
 
         return 'Done', 201
+api.add_resource(AddTour, '/tour')
 
 class GetTour(Resource):
     def get(self, uuid):
@@ -48,7 +50,6 @@ class GetTour(Resource):
         db.session.commit()
         return 'Tour successfully updated', 200
 
-
     def delete(self, uuid):
         try:
             UUID(uuid, version=1)
@@ -63,11 +64,31 @@ class GetTour(Resource):
         tour.delete()
         db.session.commit()
         return 'Tour successfully deleted', 200
-
+api.add_resource(GetTour, '/tour/<string:uuid>')
 
 class GetTours(Resource):
     def get(self):
-        return 'Done', 201
+        args = request.args
+        tours = Tour.query
+
+        if 'order_by' in args:
+            order_by_value = getattr(Tour, args['order_by'])
+
+            if 'sort' in args:
+                if args['sort'] == 'asc':
+                    order_by_value = asc(order_by_value)
+                elif args['sort'] == 'desc':
+                    order_by_value = desc(order_by_value)
+
+            tours = tours.order_by(order_by_value)
+
+        if 'no' in args:
+            tours = tours.limit(int(args['no']))
+
+
+
+        return tours_schema.dump(tours), 200
+api.add_resource(GetTours, '/tours')
 
 # class NearestTours(Resource):
 #     def post(self):
@@ -150,7 +171,6 @@ class GetTours(Resource):
 
 #         return tours_list
 
-
 class AddUser(Resource):
     def post(self):
         user_id = uuid4()
@@ -173,6 +193,8 @@ class AddUser(Resource):
         db.session.commit()
 
         return 'Done', 201
+
+api.add_resource(AddUser, '/user/')
 
 class GetUser(Resource):
     def get(self, uuid):
@@ -223,7 +245,7 @@ class GetUser(Resource):
         db.session.commit()
 
         return 'User successfully deleted', 200
-
+api.add_resource(GetUser, '/user/<string:uuid>')
 
 class LoginUser(Resource):
     def post(self):
@@ -235,8 +257,10 @@ class LoginUser(Resource):
             abort(400, message="Invalid username/password supplied")
 
         return 'Successfully logged in', 200
+api.add_resource(LoginUser, '/user/login')
 
 class LogoutUser(Resource):
     def get(self):
 
         return 'Successfully logged out', 200
+api.add_resource(LogoutUser, '/user/logout')

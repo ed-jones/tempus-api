@@ -53,7 +53,9 @@ class Tour(db.Model):
     upload_time = db.Column(db.DateTime, default=datetime.now)
     price = db.Column(db.Float, nullable=False)
     duration = db.Column(db.Interval, nullable=False)
-    category = db.Column(db.ARRAY(db.Enum(TourCategory)), nullable=False)
+    #category = db.Column(db.ARRAY(db.Enum(TourCategory)), nullable=False)
+
+    
 
 class User(db.Model):
     __tablename__ = 'USER'

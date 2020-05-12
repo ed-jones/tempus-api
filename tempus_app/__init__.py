@@ -29,15 +29,3 @@ ma = Marshmallow(tempus_app)
 
 # Import views
 from . import paths
-
-
-# Setup Routes
-api.add_resource(paths.AddUser, '/user/')
-api.add_resource(paths.GetUser, '/user/<string:uuid>')
-api.add_resource(paths.LoginUser, '/user/login')
-api.add_resource(paths.LogoutUser, '/user/logout')
-
-api.add_resource(paths.AddTour, '/tour')
-api.add_resource(paths.GetTour, '/tour/<string:uuid>')
-api.add_resource(paths.GetTours, '/tours')
-

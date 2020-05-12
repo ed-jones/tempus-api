@@ -164,6 +164,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Tour'
+              examples:
+                example-1: {}
       description: Returns a list of tours given certain parameters
       parameters:
         - schema:
@@ -191,14 +193,13 @@ paths:
         - schema:
             type: array
             enum:
-              - distance
               - rating
-              - age
               - duration
               - price
+              - upload_time
             maxLength: 0
           in: query
-          name: orderby
+          name: order_by
           description: Criteria to order the returned list by
         - schema:
             type: number
@@ -250,6 +251,11 @@ paths:
           in: query
           name: min_price
           description: The minimum price to get results for
+        - schema:
+            type: string
+          in: query
+          name: sort
+          description: Whether to order by ascending
       tags:
         - tours
   '/tour/{uuid}':
