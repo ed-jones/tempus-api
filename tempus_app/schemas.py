@@ -46,6 +46,13 @@ class UserSchema(SQLAlchemyAutoSchema):
 user_schema = UserSchema()
 login_schema = UserSchema(only=('email', 'password'))
 
+class TourImage(SQLAlchemyAutoSchema):
+    class Meta:
+        model = TourImage
+        sqla_session = db.session
+        load_instance = True
+
+
 class TourSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Tour
@@ -55,7 +62,7 @@ class TourSchema(SQLAlchemyAutoSchema):
     uuid = fields.UUID(dump_only=True)
     upload_time = auto_field(dump_only=True)
     duration = fields.TimeDelta(precision='minutes')
-
+    images = fields.Nested(TourImage, many=True, exclude=('image',))
 
 tour_schema = TourSchema()
 tours_schema = TourSchema(many=True)

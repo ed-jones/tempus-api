@@ -1,13 +1,14 @@
 from tempus_app import tempus_app, api, db, bcrypt
-from flask import jsonify, request
+from flask import jsonify, request, send_file
 from flask_restful import abort, Api, Resource
 from sqlalchemy import asc, desc
+import io
 
 from math import pi, sin, cos, atan2, sqrt
 from datetime import datetime, timedelta
 from uuid import UUID, uuid4
 
-from .models import User, Tour
+from .models import User, Tour, TourImage
 from .schemas import user_schema, tour_schema, tours_schema, login_schema, user_x_language_schema
 
 class AddTour(Resource):
@@ -84,11 +85,23 @@ class GetTours(Resource):
 
         if 'no' in args:
             tours = tours.limit(int(args['no']))
-
-
+        else:
+            tours = tours.limit(4)
 
         return tours_schema.dump(tours), 200
 api.add_resource(GetTours, '/tours')
+
+class GetTourImage(Resource):
+    def get(self, uuid):
+        image_binary = TourImage.query.filter_by(uuid=uuid).first().image
+
+        return send_file(
+            io.BytesIO(image_binary),
+            mimetype='image/jpeg',
+            attachment_filename='%s.jpg')
+            
+api.add_resource(GetTourImage, '/media/<string:uuid>/')
+
 
 # class NearestTours(Resource):
 #     def post(self):

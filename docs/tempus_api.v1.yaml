@@ -253,6 +253,9 @@ paths:
           description: The minimum price to get results for
         - schema:
             type: string
+            enum:
+              - asc
+              - desc
           in: query
           name: sort
           description: Whether to order by ascending

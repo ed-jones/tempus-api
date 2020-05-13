@@ -25,15 +25,16 @@ class TourLocation(db.Model):
 
 class TourImage(db.Model):
     __tablename__ = 'TOUR_IMAGE'
-    __table_args__ = (db.UniqueConstraint('primary', 'tour_id', name="primary_image_constraint"),)
 
-    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    uuid = db.Column(UUID(as_uuid=True), unique=True, nullable=False, primary_key=True, default=uuid4)
     tour_id = db.Column(db.ForeignKey('TOUR.uuid'), nullable=False)
     title = db.Column(db.String(32), nullable=False)
     description = db.Column(db.Text, nullable=False)
     date = db.Column(db.Date, nullable=False)
     image = db.Column(db.LargeBinary, nullable=False)
     primary = db.Column(db.Boolean)
+
+    tour = db.relationship("Tour", back_populates="images")
 
 class TourCategory(enum.Enum):
     ANIMALS = "Animals"
@@ -55,7 +56,7 @@ class Tour(db.Model):
     duration = db.Column(db.Interval, nullable=False)
     #category = db.Column(db.ARRAY(db.Enum(TourCategory)), nullable=False)
 
-    
+    images = db.relationship("TourImage", back_populates="tour")
 
 class User(db.Model):
     __tablename__ = 'USER'
