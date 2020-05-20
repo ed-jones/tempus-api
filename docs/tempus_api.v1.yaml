@@ -28,7 +28,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/UserGet'
               examples: {}
         '400':
           description: Invalid username supplied
@@ -37,73 +37,36 @@ paths:
       operationId: addUser
       description: Get user by UUID
       summary: Get user by uuid
-    put:
-      description: |-
-        Updates user by UUID
-        This can only be done by the logged in user.
-      operationId: updateUser
-      parameters:
-        - name: uuid
-          in: path
-          description: uuid of user that need to be updated
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: User successfully updated
-        '400':
-          description: Invalid user supplied
-        '404':
-          description: User not found
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
-        description: Updated user object
-        required: true
-      summary: Updated user
-      tags:
-        - user
-    delete:
-      tags:
-        - user
-      summary: Delete user
-      description: |-
-        Deletes the specified user by UUID.
-        This can only be done by the logged in user.
-      operationId: deleteUser
-      parameters:
-        - name: uuid
-          in: path
-          description: The name that needs to be deleted
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: User successfully deleted
-        '400':
-          description: Invalid username supplied
-        '404':
-          description: User not found
     parameters:
       - schema:
           type: string
         name: uuid
         in: path
         required: true
-  /user/logout:
-    get:
-      tags:
-        - user
-      operationId: logoutUser
+    patch:
+      summary: Update User
+      operationId: patch-user-uuid
       responses:
         '200':
-          description: Successfully logged out
+          description: OK
+      description: |-
+        Updates user by UUID
+        This can only be done by the logged in user.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserPost'
+  /user/logout:
+    post:
+      summary: Logout
+      operationId: post-user-logout
+      responses:
+        '200':
+          description: OK
       description: Logs out current logged in user session
-      summary: Logout User
+      tags:
+        - user
   /user/login:
     post:
       tags:
@@ -132,12 +95,12 @@ paths:
           description: Invalid username/password supplied
       operationId: loginUser
       summary: Login User
-  /user:
+  /user/add:
     post:
       tags:
         - user
       summary: Create user
-      description: This can only be done by the logged in user.
+      description: ''
       operationId: createUser
       responses:
         '200':
@@ -146,9 +109,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/UserPost'
         description: Created user object
         required: true
+    parameters: []
   /tours:
     parameters: []
     get:
@@ -163,7 +127,7 @@ paths:
                 title: Tour
                 type: array
                 items:
-                  $ref: '#/components/schemas/Tour'
+                  $ref: '#/components/schemas/TourDump'
               examples:
                 example-1: {}
       description: Returns a list of tours given certain parameters
@@ -175,7 +139,7 @@ paths:
             minimum: 0
             exclusiveMaximum: true
           in: query
-          name: 'no'
+          name: num
           description: Number of tours in returned list
         - schema:
             type: array
@@ -259,6 +223,11 @@ paths:
           in: query
           name: sort
           description: Whether to order by ascending
+        - schema:
+            type: integer
+          in: query
+          name: page
+          description: Page number
       tags:
         - tours
   '/tour/{uuid}':
@@ -278,36 +247,41 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Tour'
+                $ref: '#/components/schemas/TourDump'
               examples:
                 example-1: {}
       operationId: get-tour-uuid
       description: Get tour details by UUID
-    put:
-      summary: ''
-      operationId: put-tour-uuid
-      responses:
-        '200':
-          description: OK
-      description: Update an existing tour by UUID
-      tags:
-        - tours
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Tour'
     delete:
-      summary: ''
+      summary: Delete Tour
       operationId: delete-tour-uuid
       responses:
         '200':
           description: OK
-      description: Delete an existing tour by UUID
+      description: |-
+        Delete an existing tour by UUID
+        This can only be done by the tour guide
       tags:
         - tours
       requestBody: {}
-  /tour:
+    patch:
+      summary: Update Tour
+      operationId: patch-tour-uuid
+      responses:
+        '200':
+          description: OK
+      description: |-
+        Update an existing tour by UUID
+        This can only be done by the tour guide
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TourLoad'
+            examples: {}
+      tags:
+        - tours
+  /tour/add:
     post:
       summary: Add tour
       operationId: post-tour
@@ -321,27 +295,156 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Tour'
+              $ref: '#/components/schemas/TourLoad'
         description: ''
+    parameters: []
+  /users/me:
+    get:
+      summary: Get Me
+      tags:
+        - user
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserGet'
+      operationId: get-users-me
+      requestBody: {}
+      description: Get user details for current logged in user
+    patch:
+      summary: Update Me
+      operationId: patch-users-me
+      responses:
+        '200':
+          description: OK
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserPost'
+        description: ''
+      tags:
+        - user
+  '/user/{uuid}/archive':
+    parameters:
+      - schema:
+          type: string
+        name: uuid
+        in: path
+        required: true
+    post:
+      summary: Archive User
+      operationId: post-user-uuid-archive
+      responses:
+        '200':
+          description: OK
+      description: |-
+        Archives user by UUID
+        This can only be done by the logged in user
+      tags:
+        - user
+  '/user/{uuid}/add/language/':
+    parameters:
+      - schema:
+          type: string
+        name: uuid
+        in: path
+        required: true
+    post:
+      summary: Add Language
+      operationId: post-user-uuid-languages
+      responses:
+        '200':
+          description: OK
+      description: |-
+        Add a language to a user
+        This can only be done by the logged in user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Language'
+      tags:
+        - user
+  '/user/{uuid}/add/emergency_contact':
+    parameters:
+      - schema:
+          type: string
+        name: uuid
+        in: path
+        required: true
+    post:
+      summary: Add Emergency Contact
+      operationId: post-user-uuid-emergency_contact
+      responses:
+        '200':
+          description: OK
+      description: |-
+        Add an emergency contact to a user
+        This can only be done by the logged in user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmergencyContact'
+      tags:
+        - user
+  '/tour/{uuid}/add/location':
+    parameters:
+      - schema:
+          type: string
+        name: uuid
+        in: path
+        required: true
+    post:
+      summary: Add Tour Location
+      operationId: post-tour-uuid-add-location
+      responses:
+        '200':
+          description: OK
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Location'
+      tags:
+        - tours
+  '/tour/{uuid}/add/image':
+    parameters:
+      - schema:
+          type: string
+        name: uuid
+        in: path
+        required: true
+    post:
+      summary: Upload Tour Image
+      operationId: post-tour-uuid-add-image
+      responses:
+        '200':
+          description: OK
+      requestBody:
+        content:
+          image:
+            schema:
+              type: string
+              format: binary
+      tags:
+        - tours
 components:
   schemas:
-    User:
+    UserCommon:
       type: object
       x-examples: {}
-      title: ''
+      title: User Common
       x-tags:
         - user
+      description: "Very basic user schema, doesn't include password, uuid, ratings, languages, emergency_contacts, active, date_created, photo"
       properties:
-        uuid:
-          type: string
-          default: uuid_generate_v1()
-          format: int32
         email:
           type: string
           format: email
-        password:
-          type: string
-          format: password
         firstname:
           type: string
         lastname:
@@ -350,43 +453,23 @@ components:
           type: string
         mobile:
           type: string
-        customer_rating:
-          type: number
-        customer_rating_count:
-          type: integer
-        guide_rating:
-          type: number
-        guide_rating_count:
-          type: integer
         bio:
           type: string
-        photo:
-          type: string
-        url:
-          type: string
-        date_created:
+        website:
           type: string
         location:
           type: string
-        languages:
-          type: array
-          items:
-            $ref: '#/components/schemas/Language'
-        emergency_contacts:
-          type: array
-          items:
-            $ref: '#/components/schemas/EmergencyContact'
       required:
         - email
-        - password
         - firstname
         - lastname
-    Tour:
-      title: Tour
+    TourCommon:
+      title: Tour Common
       type: object
       x-examples: {}
       x-tags:
         - tours
+      description: "Basic tour schema, doesn't include tour_location, tour_image"
       properties:
         guide_id:
           type: string
@@ -395,19 +478,14 @@ components:
           type: string
         description:
           type: string
-        rating:
-          type: number
         uuid:
           type: string
           format: uuid
-        upload_time:
-          type: string
-          format: date-time
         price:
           type: number
         duration:
           type: string
-          format: date-time
+          format: time
         category:
           type: array
           enum:
@@ -418,14 +496,6 @@ components:
             - HIKING
           items:
             type: string
-        tour_location:
-          type: array
-          items:
-            $ref: '#/components/schemas/TourLocation'
-        tour_image:
-          type: array
-          items:
-            $ref: '#/components/schemas/TourImage'
     TourImage:
       title: TourImage
       type: object
@@ -441,16 +511,19 @@ components:
         description:
           type: string
         date:
-          type: string
+          type: integer
           format: date
         image:
           type: string
           format: binary
         primary:
           type: boolean
-    TourLocation:
+    Location:
       title: Location
       type: object
+      description: ''
+      x-tags:
+        - location
       properties:
         id:
           type: integer
@@ -464,9 +537,8 @@ components:
           type: number
         lng:
           type: number
-      x-tags:
-        - tours
-      description: ''
+        primary:
+          type: boolean
     Language:
       title: Language
       type: object
@@ -537,6 +609,64 @@ components:
       x-tags:
         - review
       description: ''
+    UserDump:
+      x-tags:
+        - user
+      description: Fields to be returned when you get a user
+      title: Dump User
+      x-examples: {}
+      allOf:
+        - $ref: '#/components/schemas/UserBasic'
+        - type: object
+          properties:
+            uuid:
+              type: string
+            emergency_contacts:
+              type: array
+              items:
+                $ref: '#/components/schemas/EmergencyContact'
+            languages:
+              type: array
+              items:
+                $ref: '#/components/schemas/Language'
+            date_created:
+              type: integer
+            photo:
+              type: string
+    UserLoad:
+      title: Load User
+      allOf:
+        - $ref: '#/components/schemas/UserBasic'
+        - type: object
+          properties:
+            password:
+              type: string
+          required:
+            - password
+      description: Fields that can be filled out when you add a user
+      x-tags:
+        - user
+    TourDump:
+      allOf:
+        - $ref: '#/components/schemas/TourBasic'
+        - type: object
+          properties:
+            location:
+              type: array
+              items:
+                $ref: '#/components/schemas/Location'
+            image:
+              $ref: '#/components/schemas/TourImage'
+            rating:
+              type: number
+            upload_time:
+              type: integer
+      title: Dump Tour
+    TourLoad:
+      title: Load Tour
+      allOf:
+        - $ref: '#/components/schemas/TourBasic'
+        - type: object
   securitySchemes:
     API Key - 1:
       type: http
