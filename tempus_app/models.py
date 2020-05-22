@@ -13,28 +13,29 @@ class Language(db.Model):
 
     languages = db.relationship("UserXLanguage", back_populates="language")
 
-class TourLocation(db.Model):
-    __tablename__ = 'TOUR_LOCATION'
+class Location(db.Model):
+    __tablename__ = 'LOCATION'
 
     id = db.Column(db.Integer, primary_key=True, nullable=False)
-    tour_id = db.Column(db.ForeignKey('TOUR.uuid'), nullable=False)
     name = db.Column(db.String(60))
     address = db.Column(db.String(60))
     lat = db.Column(db.Float, nullable=False)
     lng = db.Column(db.Float, nullable=False)
 
-class TourImage(db.Model):
-    __tablename__ = 'TOUR_IMAGE'
+    tour = db.relationship("Tour", uselist=False, back_populates="location")
+
+class Image(db.Model):
+    __tablename__ = 'IMAGE'
 
     uuid = db.Column(UUID(as_uuid=True), unique=True, nullable=False, primary_key=True, default=uuid4)
-    tour_id = db.Column(db.ForeignKey('TOUR.uuid'), nullable=False)
     title = db.Column(db.String(32), nullable=False)
     description = db.Column(db.Text, nullable=False)
     date = db.Column(db.Date, nullable=False)
     image = db.Column(db.LargeBinary, nullable=False)
-    primary = db.Column(db.Boolean)
+    upload_date = db.Column(db.DateTime, default=datetime.now)
+    file_name = db.Column(db.Text)
 
-    tour = db.relationship("Tour", back_populates="images")
+    tour = db.relationship("Tour", uselist=False, back_populates="image")
 
 class TourCategory(enum.Enum):
     ANIMALS = "Animals"
@@ -54,9 +55,12 @@ class Tour(db.Model):
     upload_time = db.Column(db.DateTime, default=datetime.now)
     price = db.Column(db.Float, nullable=False)
     duration = db.Column(db.Interval, nullable=False)
-    #category = db.Column(db.ARRAY(db.Enum(TourCategory)), nullable=False)
-
-    images = db.relationship("TourImage", back_populates="tour")
+    category = db.Column(db.Enum(TourCategory), nullable=False)
+    location_id = db.Column(db.ForeignKey('LOCATION.id'))
+    image_id = db.Column(db.ForeignKey('IMAGE.uuid'))
+    
+    location = db.relationship("Location", back_populates="tour")
+    image = db.relationship("Image", back_populates="tour")
 
 class User(db.Model):
     __tablename__ = 'USER'

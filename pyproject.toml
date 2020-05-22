@@ -19,6 +19,7 @@ marshmallow-sqlalchemy = "^0.22.3"
 alembic = "^1.4.2"
 flask-bcrypt = "^0.7.1"
 flask-jwt-extended = "^3.24.1"
+marshmallow_enum = "^1.5.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

@@ -228,6 +228,16 @@ paths:
           in: query
           name: page
           description: Page number
+        - schema:
+            type: string
+          in: query
+          name: lat
+          description: Latitude (only needed when sorting by distance)
+        - schema:
+            type: string
+          in: query
+          name: lng
+          description: Longitude (only needed when sorting by distance)
       tags:
         - tours
   '/tour/{uuid}':
@@ -264,6 +274,8 @@ paths:
       tags:
         - tours
       requestBody: {}
+      security:
+        - basicAuth: []
     patch:
       summary: Update Tour
       operationId: patch-tour-uuid
@@ -281,6 +293,8 @@ paths:
             examples: {}
       tags:
         - tours
+      security:
+        - basicAuth: []
   /tour/add:
     post:
       summary: Add tour
@@ -313,6 +327,8 @@ paths:
       operationId: get-users-me
       requestBody: {}
       description: Get user details for current logged in user
+      security:
+        - basicAuth: []
     patch:
       summary: Update Me
       operationId: patch-users-me
@@ -432,6 +448,24 @@ paths:
               format: binary
       tags:
         - tours
+  '/user/{uuid}/add/location':
+    parameters:
+      - schema:
+          type: string
+        name: uuid
+        in: path
+        required: true
+    post:
+      summary: Add Location
+      operationId: post-user-uuid-add-location
+      responses:
+        '200':
+          description: OK
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Location'
 components:
   schemas:
     UserCommon:
@@ -456,8 +490,6 @@ components:
         bio:
           type: string
         website:
-          type: string
-        location:
           type: string
       required:
         - email
@@ -633,6 +665,8 @@ components:
               type: integer
             photo:
               type: string
+            location:
+              $ref: '#/components/schemas/Location'
     UserLoad:
       title: Load User
       allOf:
@@ -648,7 +682,6 @@ components:
         - user
     TourDump:
       allOf:
-        - $ref: '#/components/schemas/TourBasic'
         - type: object
           properties:
             location:
@@ -661,14 +694,15 @@ components:
               type: number
             upload_time:
               type: integer
+        - $ref: '#/components/schemas/TourCommon'
       title: Dump Tour
     TourLoad:
       title: Load Tour
       allOf:
-        - $ref: '#/components/schemas/TourBasic'
+        - $ref: '#/components/schemas/TourCommon'
         - type: object
   securitySchemes:
-    API Key - 1:
+    basicAuth:
       type: http
       scheme: basic
 tags:

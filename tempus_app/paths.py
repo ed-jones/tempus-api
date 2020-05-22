@@ -8,17 +8,86 @@ from math import pi, sin, cos, atan2, sqrt
 from datetime import datetime, timedelta
 from uuid import UUID, uuid4
 
-from .models import User, Tour, TourImage
+from .models import User, Tour, Image, Location
 from .schemas import user_schema, tour_schema, tours_schema, login_schema, user_x_language_schema
 
-class AddTour(Resource):
-    def post(self):
-        new_tour = tour_schema.load(request.get_json())
-        db.session.add(new_tour)
-        db.session.commit()
+class GetTours(Resource):
+    def get(self):
+        args = request.args
+        tours = Tour.query
 
-        return 'Done', 201
-api.add_resource(AddTour, '/tour')
+        if 'order_by' in args:
+            try:
+                order_by_value = getattr(Tour, args['order_by'])
+
+                if 'sort' in args:
+                    if args['sort'] == 'asc':
+                        order_by_value = asc(order_by_value)
+                    elif args['sort'] == 'desc':
+                        order_by_value = desc(order_by_value)
+                else:
+                    order_by_value = asc(order_by_value)
+
+                tours = tours.order_by(order_by_value)
+
+            except:
+                if args['order_by'] == 'distance':
+
+                    user_lat = -33.8638234
+                    user_lng = 151.212256
+
+                    if 'lat' in args:
+                        user_lat = args['lat']
+
+                    if 'lng' in args:
+                        user_lng = args['lng']
+
+                    tour_distance_dict = []
+
+                    for tour in tours:
+
+                        tour_distance_dict.append({
+                            "tour" : tour,
+                            "distance" : distance(float(user_lat), float(user_lng), tour.location.lat, tour.location.lng),
+                        })
+
+                    sorted_tour_distance_dict = sorted(tour_distance_dict, key=lambda k: k['distance'])
+
+                    sorted_tour_list = []
+
+                    for tour_distance in sorted_tour_distance_dict:
+                        sorted_tour_list.append(tour_distance['tour'])
+
+                    list_size = 4
+                    if 'num' in args:
+                        list_size = int(args['num'])
+
+                    return tours_schema.dump(sorted_tour_list[:list_size]), 200
+                    
+        if 'num' in args:
+            tours = tours.limit(int(args['num']))
+        else:
+            tours = tours.limit(4)
+
+        return tours_schema.dump(tours), 200
+api.add_resource(GetTours, '/tours')
+
+def distance(lat1, lng1, lat2, lng2):
+    pi180 = pi / 180
+    lat1 *= pi180
+    lng1 *= pi180
+    lat2 *= pi180
+    lng2 *= pi180
+
+    #r = 6378137
+    r = 6378.137
+    dlat = lat2 - lat1
+    dlng = lng2 - lng1
+    a = sin(dlat/2) * sin(dlat/2) + cos(lat1) * cos(lat2) * sin(dlng/2) * sin(dlng/2)
+    c = 2 * atan2(sqrt(a), sqrt(1 - a))
+    km = r * c
+
+    return km
 
 class GetTour(Resource):
     def get(self, uuid):
@@ -67,63 +136,27 @@ class GetTour(Resource):
         return 'Tour successfully deleted', 200
 api.add_resource(GetTour, '/tour/<string:uuid>')
 
-class GetTours(Resource):
-    def get(self):
-        args = request.args
-        tours = Tour.query
+class AddTour(Resource):
+    def post(self):
+        new_tour = tour_schema.load(request.get_json())
+        db.session.add(new_tour)
+        db.session.commit()
 
-        if 'order_by' in args:
-            order_by_value = getattr(Tour, args['order_by'])
+        return 'Done', 201
+api.add_resource(AddTour, '/tour')
 
-            if 'sort' in args:
-                if args['sort'] == 'asc':
-                    order_by_value = asc(order_by_value)
-                elif args['sort'] == 'desc':
-                    order_by_value = desc(order_by_value)
 
-            tours = tours.order_by(order_by_value)
-
-        if 'no' in args:
-            tours = tours.limit(int(args['no']))
-        else:
-            tours = tours.limit(4)
-
-        return tours_schema.dump(tours), 200
-api.add_resource(GetTours, '/tours')
-
-class GetTourImage(Resource):
+class GetImage(Resource):
     def get(self, uuid):
-        image_binary = TourImage.query.filter_by(uuid=uuid).first().image
+        image_binary = Image.query.filter_by(uuid=uuid).first().image
 
         return send_file(
             io.BytesIO(image_binary),
             mimetype='image/jpeg',
             attachment_filename='%s.jpg')
             
-api.add_resource(GetTourImage, '/media/<string:uuid>/')
-
-
-# class NearestTours(Resource):
-#     def post(self):
-
-#         user_location = request.get_json()
-#         user_lat = user_location['lat']
-#         user_lng = user_location['lng']
-
-#         locations_model = models.Location.query.all()
-#         locations_list = []
-
-#         for location_model in locations_model:
-#             tour = models.Tour.query.filter_by(id={location_model.tour_id}).first()
-
-#             locations_list.append({
-#                 "tour_id" : location_model.tour_id,
-#                 "distance" : distance(float(user_lat), float(user_lng), location_model.lat, location_model.lng),
-#                 })
+api.add_resource(GetImage, '/media/<string:uuid>/')
         
-
-
-#         # locations_list = sorted(locations_list, key=lambda k: k['distance'])
 
 #         # nearest_tours = []
         
@@ -147,21 +180,7 @@ api.add_resource(GetTourImage, '/media/<string:uuid>/')
 #         return tours_list
 
 
-# def distance(lat1, lng1, lat2, lng2):
-#     pi180 = pi / 180
-#     lat1 *= pi180
-#     lng1 *= pi180
-#     lat2 *= pi180
-#     lng2 *= pi180
 
-#     r = 6378137
-#     dlat = lat2 - lat1
-#     dlng = lng2 - lng1
-#     a = sin(dlat/2) * sin(dlat/2) + cos(lat1) * cos(lat2) * sin(dlng/2) * sin(dlng/2)
-#     c = 2 * atan2(sqrt(a), sqrt(1 - a))
-#     km = r * c
-
-#     return km
 
 # class RecentTours(Resource):
 #     def get(self):
