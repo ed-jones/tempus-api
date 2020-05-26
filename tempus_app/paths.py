@@ -16,6 +16,8 @@ class GetTours(Resource):
         args = request.args
         tours = Tour.query
 
+        num = 4
+
         if 'order_by' in args:
             try:
                 order_by_value = getattr(Tour, args['order_by'])
@@ -58,7 +60,7 @@ class GetTours(Resource):
                     for tour_distance in sorted_tour_distance_dict:
                         sorted_tour_list.append(tour_distance['tour'])
 
-                    list_size = 4
+                    list_size = num
                     if 'num' in args:
                         list_size = int(args['num'])
 
@@ -70,7 +72,10 @@ class GetTours(Resource):
         if 'num' in args:
             tours = tours.limit(int(args['num']))
         else:
-            tours = tours.limit(4)
+            tours = tours.limit(num)
+
+        if 'page' in args:
+            tours = tours.offset(num*int(args['page']))
 
         return tours_schema.dump(tours), 200
 api.add_resource(GetTours, '/tours')
