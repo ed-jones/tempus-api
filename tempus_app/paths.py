@@ -75,7 +75,8 @@ class GetTours(Resource):
             tours = tours.limit(num)
 
         if 'page' in args:
-            tours = tours.offset(num*int(args['page']))
+            tours = tours.offset(num*(int(args['page'])-1))
+            
 
         return tours_schema.dump(tours), 200
 api.add_resource(GetTours, '/tours')
