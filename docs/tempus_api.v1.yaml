@@ -188,12 +188,12 @@ paths:
         - schema:
             type: integer
           in: query
-          name: max_age
+          name: max_upload_time
           description: The maximum age to get results for (days)
         - schema:
             type: integer
           in: query
-          name: min_age
+          name: min_upload_time
           description: The minimum age to get results for (days)
         - schema:
             type: integer

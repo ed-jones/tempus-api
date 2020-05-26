@@ -1,5 +1,8 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.ext.hybrid import hybrid_method
+from sqlalchemy import func
+from math import pi
 from uuid import uuid4
 from tempus_app import db
 from datetime import datetime
@@ -61,6 +64,23 @@ class Tour(db.Model):
     
     location = db.relationship("Location", back_populates="tour")
     image = db.relationship("Image", back_populates="tour")
+
+    @hybrid_method
+    def get_distance(self, user_lat, user_lng):
+        pi180 = pi / 180
+        lat1 = float(user_lat) * pi180
+        lng1 = float(user_lng) * pi180
+        lat2 = Location.lat * pi180
+        lng2 = Location.lng * pi180
+        r = 6371
+        dlat = lat2 - lat1
+        dlng = lng2 - lng1
+        a = func.sin(dlat/2) * func.sin(dlat/2) + func.cos(lat1) * func.cos(lat2) * func.sin(dlng/2) * func.sin(dlng/2)
+        c = 2 * func.atan2(func.sqrt(a), func.sqrt(1 - a))
+        km = r * c
+
+        return km
+
 
 class User(db.Model):
     __tablename__ = 'USER'

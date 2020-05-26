@@ -6,6 +6,7 @@ from marshmallow.decorators import *
 from marshmallow_enum import EnumField
 
 
+
 class EmergencyContactSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = EmergencyContact

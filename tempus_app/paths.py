@@ -1,12 +1,13 @@
 from tempus_app import tempus_app, api, db, bcrypt
 from flask import jsonify, request, send_file
 from flask_restful import abort, Api, Resource
-from sqlalchemy import asc, desc
+from sqlalchemy import asc, desc, func
 import io
 
 from math import pi, sin, cos, atan2, sqrt
 from datetime import datetime, timedelta
 from uuid import UUID, uuid4
+from datetime import timedelta
 
 from .models import User, Tour, Image, Location, TourCategory
 from .schemas import user_schema, tour_schema, tours_schema, login_schema, user_x_language_schema
@@ -14,89 +15,72 @@ from .schemas import user_schema, tour_schema, tours_schema, login_schema, user_
 class GetTours(Resource):
     def get(self):
         args = request.args
-        tours = Tour.query
+        tours = Tour.query.join(Tour.location)
 
-        num = 4
+        DEFAULT_NUM = 4
 
         if 'order_by' in args:
-            try:
+
+            if args['order_by'] == 'distance' and 'lat' in args and 'lng' in args:
+                order_by_value = Tour.get_distance(args['lat'], args['lng'])
+            else:
                 order_by_value = getattr(Tour, args['order_by'])
 
-                if 'sort' in args:
-                    if args['sort'] == 'asc':
-                        order_by_value = asc(order_by_value)
-                    elif args['sort'] == 'desc':
-                        order_by_value = desc(order_by_value)
-                else:
+            if 'sort' in args:
+                if args['sort'] == 'asc':
                     order_by_value = asc(order_by_value)
+                elif args['sort'] == 'desc':
+                    order_by_value = desc(order_by_value)
+            else:
+                order_by_value = asc(order_by_value)
 
-                tours = tours.order_by(order_by_value)
-
-            except:
-                if args['order_by'] == 'distance':
-
-                    user_lat = -33.8638234
-                    user_lng = 151.212256
-
-                    if 'lat' in args:
-                        user_lat = args['lat']
-
-                    if 'lng' in args:
-                        user_lng = args['lng']
-
-                    tour_distance_dict = []
-
-                    for tour in tours:
-
-                        tour_distance_dict.append({
-                            "tour" : tour,
-                            "distance" : distance(float(user_lat), float(user_lng), tour.location.lat, tour.location.lng),
-                        })
-
-                    sorted_tour_distance_dict = sorted(tour_distance_dict, key=lambda k: k['distance'])
-
-                    sorted_tour_list = []
-
-                    for tour_distance in sorted_tour_distance_dict:
-                        sorted_tour_list.append(tour_distance['tour'])
-
-                    list_size = num
-                    if 'num' in args:
-                        list_size = int(args['num'])
-
-                    return tours_schema.dump(sorted_tour_list[:list_size]), 200
+            tours = tours.order_by(order_by_value)
 
         if 'category' in args:
             tours = tours.filter(Tour.category == getattr(TourCategory, args['category']))
+
+        if 'lat' in args and 'lng' in args:
+            if 'max_distance' in args:
+                tours = tours.filter(Tour.get_distance(args['lat'], args['lng']) <= int(args['max_distance']))
+
+            if 'min_distance' in args:
+                tours = tours.filter(Tour.get_distance(args['lat'], args['lng']) >= int(args['min_distance']))
+                        
+        if 'max_rating' in args:
+            tours = tours.filter(Tour.rating <= float(args['max_rating']))
+
+        if 'min_rating' in args:
+            tours = tours.filter(Tour.rating >= float(args['min_rating']))
+
+        if 'max_upload_time' in args:
+            tours = tours.filter(Tour.upload_time <= datetime.fromtimestamp(int(args['max_upload_time'])))
+
+        if 'min_upload_time' in args:
+            tours = tours.filter(Tour.upload_time >= datetime.fromtimestamp(int(args['min_upload_time'])))
+
+        if 'max_duration' in args:
+            tours = tours.filter(Tour.duration <= timedelta(minutes=int(args['max_duration'])))
+
+        if 'min_duration' in args:
+            tours = tours.filter(Tour.duration >= timedelta(minutes=int(args['min_duration'])))
+
+        if 'max_price' in args:
+            tours = tours.filter(Tour.price <= float(args['max_price']))
+
+        if 'min_price' in args:
+            tours = tours.filter(Tour.price >= float(args['min_price']))
                     
         if 'num' in args:
-            tours = tours.limit(int(args['num']))
-        else:
-            tours = tours.limit(num)
+            num = int(args['num'])
+
+        tours = tours.limit(DEFAULT_NUM)
 
         if 'page' in args:
-            tours = tours.offset(num*(int(args['page'])-1))
-            
+            tours = tours.offset(DEFAULT_NUM*(int(args['page'])-1))
+
 
         return tours_schema.dump(tours), 200
 api.add_resource(GetTours, '/tours')
-
-def distance(lat1, lng1, lat2, lng2):
-    pi180 = pi / 180
-    lat1 *= pi180
-    lng1 *= pi180
-    lat2 *= pi180
-    lng2 *= pi180
-
-    #r = 6378137
-    r = 6378.137
-    dlat = lat2 - lat1
-    dlng = lng2 - lng1
-    a = sin(dlat/2) * sin(dlat/2) + cos(lat1) * cos(lat2) * sin(dlng/2) * sin(dlng/2)
-    c = 2 * atan2(sqrt(a), sqrt(1 - a))
-    km = r * c
-
-    return km
 
 class GetTour(Resource):
     def get(self, uuid):
