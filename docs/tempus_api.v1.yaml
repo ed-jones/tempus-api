@@ -10,6 +10,8 @@ info:
 servers:
   - description: Local API
     url: 'http://127.0.0.1:5000'
+  - url: 'https://api.tempus.tours'
+    description: Remote API
 paths:
   '/user/{uuid}':
     get:
@@ -407,65 +409,6 @@ paths:
               $ref: '#/components/schemas/EmergencyContact'
       tags:
         - user
-  '/tour/{uuid}/add/location':
-    parameters:
-      - schema:
-          type: string
-        name: uuid
-        in: path
-        required: true
-    post:
-      summary: Add Tour Location
-      operationId: post-tour-uuid-add-location
-      responses:
-        '200':
-          description: OK
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Location'
-      tags:
-        - tours
-  '/tour/{uuid}/add/image':
-    parameters:
-      - schema:
-          type: string
-        name: uuid
-        in: path
-        required: true
-    post:
-      summary: Upload Tour Image
-      operationId: post-tour-uuid-add-image
-      responses:
-        '200':
-          description: OK
-      requestBody:
-        content:
-          image:
-            schema:
-              type: string
-              format: binary
-      tags:
-        - tours
-  '/user/{uuid}/add/location':
-    parameters:
-      - schema:
-          type: string
-        name: uuid
-        in: path
-        required: true
-    post:
-      summary: Add Location
-      operationId: post-user-uuid-add-location
-      responses:
-        '200':
-          description: OK
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Location'
 components:
   schemas:
     UserCommon:
@@ -491,6 +434,8 @@ components:
           type: string
         website:
           type: string
+        location:
+          $ref: '#/components/schemas/Location'
       required:
         - email
         - firstname
@@ -510,13 +455,10 @@ components:
           type: string
         description:
           type: string
-        uuid:
-          type: string
-          format: uuid
         price:
           type: number
         duration:
-          type: string
+          type: number
           format: time
         category:
           type: array
@@ -528,28 +470,10 @@ components:
             - HIKING
           items:
             type: string
-    TourImage:
-      title: TourImage
-      type: object
-      x-tags:
-        - tours
-      properties:
-        id:
-          type: integer
-        tour_id:
+        location:
+          $ref: '#/components/schemas/Location'
+        image_url:
           type: string
-        title:
-          type: string
-        description:
-          type: string
-        date:
-          type: integer
-          format: date
-        image:
-          type: string
-          format: binary
-        primary:
-          type: boolean
     Location:
       title: Location
       type: object
@@ -665,8 +589,6 @@ components:
               type: integer
             photo:
               type: string
-            location:
-              $ref: '#/components/schemas/Location'
     UserLoad:
       title: Load User
       allOf:
@@ -684,16 +606,12 @@ components:
       allOf:
         - type: object
           properties:
-            location:
-              type: array
-              items:
-                $ref: '#/components/schemas/Location'
-            image:
-              $ref: '#/components/schemas/TourImage'
             rating:
               type: number
             upload_time:
               type: integer
+            uuid:
+              type: string
         - $ref: '#/components/schemas/TourCommon'
       title: Dump Tour
     TourLoad:

@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from uuid import UUID, uuid4
 from datetime import timedelta
 
-from .models import User, Tour, Image, Location, TourCategory
+from .models import User, Tour, Location, TourCategory
 from .schemas import user_schema, tour_schema, tours_schema, login_schema, user_x_language_schema
 
 class GetTours(Resource):
@@ -78,7 +78,6 @@ class GetTours(Resource):
         if 'page' in args:
             tours = tours.offset(DEFAULT_NUM*(int(args['page'])-1))
 
-
         return tours_schema.dump(tours), 200
 api.add_resource(GetTours, '/tours')
 
@@ -138,83 +137,25 @@ class AddTour(Resource):
         return 'Done', 201
 api.add_resource(AddTour, '/tour')
 
+# class GetImage(Resource):
+#     def get(self, uuid):
+#         image_binary = Image.query.filter_by(uuid=uuid).first().image
 
-class GetImage(Resource):
-    def get(self, uuid):
-        image_binary = Image.query.filter_by(uuid=uuid).first().image
-
-        return send_file(
-            io.BytesIO(image_binary),
-            mimetype='image/jpeg',
-            attachment_filename='%s.jpg')
+#         return send_file(
+#             io.BytesIO(image_binary),
+#             mimetype='image/jpeg',
+#             attachment_filename='%s.jpg')
             
-api.add_resource(GetImage, '/media/<string:uuid>/')
-        
-
-#         # nearest_tours = []
-        
-#         # for location in locations_list:
-#         #     nearest_tours.append(models.Tour.query.filter_by(title == location.tour_id))
-
-#         # tours_list = []
-
-#         # for nearest_tour in nearest_tours:
-#         #     tours_list.append({
-#         #         "uuid" : str(nearest_tour.uuid), 
-#         #         "guide_id": nearest_tour.guide_id, 
-#         #         "title" : nearest_tour.title, 
-#         #         "description" : nearest_tour.description, 
-#         #         "rating" : nearest_tour.rating,
-#         #         "upload_time" : str(nearest_tour.upload_time),
-#         #         "price" : nearest_tour.price,
-#         #         "duration" : str(nearest_tour.duration)
-#         #         })
-
-#         return tours_list
-
-
-
-
-# class RecentTours(Resource):
-#     def get(self):
-
-#         tours_model = models.Tour.query.order_by(models.Tour.upload_time)
-#         tours_list = []
-
-#         for tour_model in tours_model:
-#             tours_list.append({
-#                 "uuid" : str(tour_model.uuid), 
-#                 "guide_id": tour_model.guide_id, 
-#                 "title" : tour_model.title, 
-#                 "description" : tour_model.description, 
-#                 "rating" : tour_model.rating,
-#                 "upload_time" : str(tour_model.upload_time),
-#                 "price" : tour_model.price,
-#                 "duration" : str(tour_model.duration)
-#                 })
-
-
-#         return tours_list
+# api.add_resource(GetImage, '/media/<string:uuid>/')
 
 class AddUser(Resource):
     def post(self):
         user_id = uuid4()
-
         user_data = request.get_json()
-        # languages_data = user_data['languages']
-
-        # user_data.pop('languages')
         user_data['uuid'] = user_id
         user_data['password'] = bcrypt.generate_password_hash(user_data['password'])
         new_user = user_schema.load(user_data)
         db.session.add(new_user)
-
-
-        # for language_data in languages_data:
-        #     language_data['user_id'] = user_id
-        #     new_language_relation = user_x_language_schema.load(language_data)
-        #     db.session.add(new_language_relation)
-
         db.session.commit()
 
         return 'Done', 201

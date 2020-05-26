@@ -5,8 +5,6 @@ from marshmallow_sqlalchemy import SQLAlchemyAutoSchema, auto_field
 from marshmallow.decorators import *
 from marshmallow_enum import EnumField
 
-
-
 class EmergencyContactSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = EmergencyContact
@@ -49,12 +47,6 @@ class UserSchema(SQLAlchemyAutoSchema):
 user_schema = UserSchema()
 login_schema = UserSchema(only=('email', 'password'))
 
-class Image(SQLAlchemyAutoSchema):
-    class Meta:
-        model = Image
-        sqla_session = db.session
-        load_instance = True
-
 class Location(SQLAlchemyAutoSchema):
     class Meta:
         model = Location
@@ -70,7 +62,6 @@ class TourSchema(SQLAlchemyAutoSchema):
     uuid = fields.UUID(dump_only=True)
     upload_time = auto_field(dump_only=True)
     duration = fields.TimeDelta(precision='minutes')
-    image = fields.Nested(Image, exclude=('image',))
     location = fields.Nested(Location)
     category = EnumField(TourCategory)
 

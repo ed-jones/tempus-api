@@ -27,19 +27,6 @@ class Location(db.Model):
 
     tour = db.relationship("Tour", uselist=False, back_populates="location")
 
-class Image(db.Model):
-    __tablename__ = 'IMAGE'
-
-    uuid = db.Column(UUID(as_uuid=True), unique=True, nullable=False, primary_key=True, default=uuid4)
-    title = db.Column(db.String(32), nullable=False)
-    description = db.Column(db.Text, nullable=False)
-    date = db.Column(db.Date, nullable=False)
-    image = db.Column(db.LargeBinary, nullable=False)
-    upload_date = db.Column(db.DateTime, default=datetime.now)
-    file_name = db.Column(db.Text)
-
-    tour = db.relationship("Tour", uselist=False, back_populates="image")
-
 class TourCategory(enum.Enum):
     ANIMALS = "Animals"
     BEACH = "Beach"
@@ -60,10 +47,9 @@ class Tour(db.Model):
     duration = db.Column(db.Interval, nullable=False)
     category = db.Column(db.Enum(TourCategory), nullable=False)
     location_id = db.Column(db.ForeignKey('LOCATION.id'))
-    image_id = db.Column(db.ForeignKey('IMAGE.uuid'))
+    image_url = db.Column(db.Text)
     
     location = db.relationship("Location", back_populates="tour")
-    image = db.relationship("Image", back_populates="tour")
 
     @hybrid_method
     def get_distance(self, user_lat, user_lng):
