@@ -8,7 +8,7 @@ from math import pi, sin, cos, atan2, sqrt
 from datetime import datetime, timedelta
 from uuid import UUID, uuid4
 
-from .models import User, Tour, Image, Location
+from .models import User, Tour, Image, Location, TourCategory
 from .schemas import user_schema, tour_schema, tours_schema, login_schema, user_x_language_schema
 
 class GetTours(Resource):
@@ -63,6 +63,9 @@ class GetTours(Resource):
                         list_size = int(args['num'])
 
                     return tours_schema.dump(sorted_tour_list[:list_size]), 200
+
+        if 'category' in args:
+            tours = tours.filter(Tour.category == getattr(TourCategory, args['category']))
                     
         if 'num' in args:
             tours = tours.limit(int(args['num']))
