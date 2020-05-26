@@ -64,6 +64,7 @@ class TourSchema(SQLAlchemyAutoSchema):
     duration = fields.TimeDelta(precision='minutes')
     location = fields.Nested(Location)
     category = EnumField(TourCategory)
+    guide = fields.Nested(UserSchema)
 
 tour_schema = TourSchema()
 tours_schema = TourSchema(many=True)

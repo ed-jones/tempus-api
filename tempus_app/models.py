@@ -50,6 +50,7 @@ class Tour(db.Model):
     image_url = db.Column(db.Text)
     
     location = db.relationship("Location", back_populates="tour")
+    guide = db.relationship("User", back_populates="tour")
 
     @hybrid_method
     def get_distance(self, user_lat, user_lng):
@@ -90,6 +91,7 @@ class User(db.Model):
 
     languages = db.relationship("UserXLanguage", back_populates="user")
     emergency_contacts = db.relationship("EmergencyContact", back_populates="user")
+    tour = db.relationship("Tour", back_populates="guide")
 
 class EmergencyContact(db.Model):
     __tablename__ = 'EMERGENCY_CONTACT'
