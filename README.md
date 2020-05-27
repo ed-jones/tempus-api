@@ -18,7 +18,7 @@ Install [PostgreSQL](https://www.postgresql.org/download/)
 
 Activate virtual environment `$ poetry shell`
 
-Install poetry dependencies and create virtual environment: `$ poetry install`
+Install poetry dependencies: `$ poetry install`
 
 ### Initialize Database
 
