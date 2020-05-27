@@ -1,4 +1,4 @@
-# tempus_flask
+# tempus_api
 
 Enable virtual environment: `source venv/bin/activate`
 
