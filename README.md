@@ -2,11 +2,13 @@
 
 ## First time setup
 
-### Set up Virtual Environment
+### Poetry Setup
 
-Create virtual environemnt: `$ python -m venv venv`
+Install [Poetry](https://python-poetry.org/docs/)
 
-Enable virtual environment: `$ source venv/bin/activate`
+Install [PostgreSQL](https://www.postgresql.org/download/)
+
+Install dependencies: `$ poetry install`
 
 ### Database setup
 
@@ -21,12 +23,6 @@ Upgrade db `$ flask db upgrade`
 ### Run
 
 Run flask: `$ flask run`
-
-## Package Management
-
-Add package: `$ poetry add package-name`
-
-Install packages: `$ poetry install`
 
 # API Documentation
 
