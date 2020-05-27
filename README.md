@@ -22,13 +22,11 @@ Activate virtual environment `$ poetry shell`
 
 ### Initialize Database
 
-Replace `'%yLb36Bs2G'` in `config.py` file with a secure password
-
 Switch to postgres user and enter postgres: `$ sudo -u postgres psql`
 
 Create database: `# CREATE DATABASE tempus;`
 
-Create tempus user account: `# CREATE USER tempus WITH PASSWORD '<your secure password>';`
+Create tempus user account: `# CREATE USER tempus WITH PASSWORD '%yLb36Bs2G';`
 
 Grant tempus user access to tempus database: `# GRANT ALL PRIVILEGES ON database tempus TO tempus;`
 
