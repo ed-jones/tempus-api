@@ -130,3 +130,5 @@ dmypy.json
 .history
 
 # End of https://www.gitignore.io/api/visualstudiocode
+tempus_api.sock
+tempus_api.ini
