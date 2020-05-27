@@ -18,6 +18,8 @@ Install [PostgreSQL](https://www.postgresql.org/download/)
 
 Install poetry dependencies and create virtual environment: `$ poetry install`
 
+Activate virtual environment `$ poetry shell`
+
 ### Initialize Database
 
 Replace `'%yLb36Bs2G'` in `config.py` file with a secure password
