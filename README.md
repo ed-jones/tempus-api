@@ -1,12 +1,26 @@
 # tempus_api
 
-Enable virtual environment: `source venv/bin/activate`
+## First time setup
 
-Run flask: `flask run`
+### Set up Virtual Environment
 
-Migrate db: `flask db migrate`
+Create virtual environemnt: `$ python -m venv venv`
 
-Upgrade db `flask db upgrade`
+Enable virtual environment: `$ source venv/bin/activate`
+
+### Database setup
+
+Configure db in `config.py` file
+
+Stamp head: `$ flask db stamp head`
+
+Migrate db: `$ flask db migrate`
+
+Upgrade db `$ flask db upgrade`
+
+### Run
+
+Run flask: `$ flask run`
 
 # API Documentation
 
