@@ -6,9 +6,9 @@
 
 Install python3
 
-Install python3-pip
-
 Install python3-venv
+
+Install libpq-dev
 
 Install [Poetry](https://python-poetry.org/docs/)
 
