@@ -26,7 +26,7 @@ Switch to postgres user and enter postgres: `$ sudo -u postgres psql`
 
 Create database: `# CREATE DATABASE tempus;`
 
-Create tempus user account: `# CREATE USER tempus WITH PASSWORD <your secure password>;`
+Create tempus user account: `# CREATE USER tempus WITH PASSWORD '<your secure password>';`
 
 Grant tempus user access to tempus database: `# GRANT ALL PRIVILEGES ON database tempus TO tempus;`
 
