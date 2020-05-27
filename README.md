@@ -16,9 +16,9 @@ Install [PostgreSQL](https://www.postgresql.org/download/)
 
 ### Setup Python Environment
 
-Install poetry dependencies and create virtual environment: `$ poetry install`
-
 Activate virtual environment `$ poetry shell`
+
+Install poetry dependencies and create virtual environment: `$ poetry install`
 
 ### Initialize Database
 
