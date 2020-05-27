@@ -22,6 +22,12 @@ Upgrade db `$ flask db upgrade`
 
 Run flask: `$ flask run`
 
+## Package Management
+
+Add package: `$ poetry add package-name`
+
+Install packages: `$ poetry install`
+
 # API Documentation
 
 Please read `tempus_api.v1.yaml`
