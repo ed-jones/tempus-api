@@ -36,6 +36,7 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+venv
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -130,5 +131,7 @@ dmypy.json
 .history
 
 # End of https://www.gitignore.io/api/visualstudiocode
+
+# Deployment files
 tempus_api.sock
 tempus_api.ini
