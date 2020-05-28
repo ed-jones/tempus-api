@@ -97,6 +97,16 @@ paths:
           description: Invalid username/password supplied
       operationId: loginUser
       summary: Login User
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
   /user/add:
     post:
       tags:
@@ -111,7 +121,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserPost'
+              $ref: '#/components/schemas/UserLoad'
         description: Created user object
         required: true
     parameters: []
@@ -592,7 +602,7 @@ components:
     UserLoad:
       title: Load User
       allOf:
-        - $ref: '#/components/schemas/UserBasic'
+        - $ref: '#/components/schemas/UserCommon'
         - type: object
           properties:
             password:

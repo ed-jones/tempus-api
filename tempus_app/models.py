@@ -85,7 +85,7 @@ class User(db.Model):
     guide_rating_count = db.Column(db.Integer, default=0)
     bio = db.Column(db.Text)
     photo = db.Column(db.LargeBinary)
-    url = db.Column(db.String(60))
+    website = db.Column(db.String(60))
     date_created = db.Column(db.DateTime, default=datetime.now)
     location = db.Column(db.Text)
 

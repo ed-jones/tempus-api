@@ -2,8 +2,12 @@ from tempus_app import tempus_app, api, db, bcrypt
 from flask import jsonify, request, send_file
 from flask_restful import abort, Api, Resource
 from sqlalchemy import asc, desc, func
-import io
+from flask_jwt_extended import (
+    JWTManager, jwt_required, create_access_token,
+    get_jwt_identity
+)
 
+import io
 from math import pi, sin, cos, atan2, sqrt
 from datetime import datetime, timedelta
 from uuid import UUID, uuid4
@@ -160,7 +164,7 @@ class AddUser(Resource):
 
         return 'Done', 201
 
-api.add_resource(AddUser, '/user/')
+api.add_resource(AddUser, '/user/add')
 
 class GetUser(Resource):
     def get(self, uuid):
@@ -220,9 +224,11 @@ class LoginUser(Resource):
         user = User.query.filter_by(email=user_data.email).first()
 
         if (not user or not bcrypt.check_password_hash(user.password, user_data.password)):
-            abort(400, message="Invalid username/password supplied")
+            abort(401, message="Invalid username/password supplied")
 
-        return 'Successfully logged in', 200
+        access_token = create_access_token(identity=user_data.email)
+        return access_token, 200
+
 api.add_resource(LoginUser, '/user/login')
 
 class LogoutUser(Resource):
