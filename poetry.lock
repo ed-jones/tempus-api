@@ -610,8 +610,8 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "91850c537da258619a438587a9e0d69659041048710425c0bccfc8cddf8a0c42"
-python-versions = "^3.7"
+content-hash = "6c89a09355eceff8b9331da8ae5f4dd572e5de013cecf57b29973a4264224e73"
+python-versions = "^3.6"
 
 [metadata.files]
 alembic = [
