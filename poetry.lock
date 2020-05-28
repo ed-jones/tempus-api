@@ -141,6 +141,18 @@ Flask = ">=0.9"
 
 [[package]]
 category = "main"
+description = "A Flask extension adding a decorator for CORS support"
+name = "flask-cors"
+optional = false
+python-versions = "*"
+version = "3.0.8"
+
+[package.dependencies]
+Flask = ">=0.9"
+Six = "*"
+
+[[package]]
+category = "main"
 description = "Extended JWT integration with Flask"
 name = "flask-jwt-extended"
 optional = false
@@ -598,7 +610,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "97bacb342105a74cf0e32ed9e6ab5de92bde8642f6ea0a1e595e6e7f46c26230"
+content-hash = "91850c537da258619a438587a9e0d69659041048710425c0bccfc8cddf8a0c42"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -687,6 +699,10 @@ flask-bcrypt = [
 ]
 flask-classy = [
     {file = "Flask-Classy-0.6.10.tar.gz", hash = "sha256:13c9b4312bff2bf5c6c45ba7d6da46d6bd81724dfc45b598f12438c230583aab"},
+]
+flask-cors = [
+    {file = "Flask-Cors-3.0.8.tar.gz", hash = "sha256:72170423eb4612f0847318afff8c247b38bd516b7737adfc10d1c2cdbb382d16"},
+    {file = "Flask_Cors-3.0.8-py2.py3-none-any.whl", hash = "sha256:f4d97201660e6bbcff2d89d082b5b6d31abee04b1b3003ee073a6fd25ad1d69a"},
 ]
 flask-jwt-extended = [
     {file = "Flask-JWT-Extended-3.24.1.tar.gz", hash = "sha256:0aa8ee6fa7eb3be9314e39dd199ac8e19389a95371f9d54e155c7aa635e319dd"},

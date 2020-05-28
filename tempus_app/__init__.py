@@ -7,6 +7,7 @@ from flask_restful import Api
 from flask_marshmallow import Marshmallow 
 from flask_migrate import Migrate
 from flask_bcrypt import Bcrypt
+from flask_cors import CORS
 
 
 # Setup App
@@ -26,6 +27,9 @@ bcrypt = Bcrypt(tempus_app)
 
 # Setup Marshmallow
 ma = Marshmallow(tempus_app)
+
+# Setup CORS
+cors = CORS(tempus_app, resources={r"*": {"origins": "tempus.tours"}})
 
 # Import views
 from . import paths
