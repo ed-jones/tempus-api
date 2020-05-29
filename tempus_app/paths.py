@@ -141,17 +141,6 @@ class AddTour(Resource):
         return 'Done', 201
 api.add_resource(AddTour, '/tour')
 
-# class GetImage(Resource):
-#     def get(self, uuid):
-#         image_binary = Image.query.filter_by(uuid=uuid).first().image
-
-#         return send_file(
-#             io.BytesIO(image_binary),
-#             mimetype='image/jpeg',
-#             attachment_filename='%s.jpg')
-            
-# api.add_resource(GetImage, '/media/<string:uuid>/')
-
 class AddUser(Resource):
     def post(self):
         user_id = uuid4()
@@ -226,7 +215,7 @@ class LoginUser(Resource):
         if (not user or not bcrypt.check_password_hash(user.password, user_data.password)):
             abort(401, message="Invalid username/password supplied")
 
-        access_token = create_access_token(identity=user_data.email)
+        access_token = create_access_token(identity=user_data.uuid)
         return access_token, 200
 
 api.add_resource(LoginUser, '/user/login')
@@ -236,3 +225,10 @@ class LogoutUser(Resource):
 
         return 'Successfully logged out', 200
 api.add_resource(LogoutUser, '/user/logout')
+
+@jwt_required
+class Me(Resource):
+    def get(self):
+        current_user = get_jwt_identity()
+        return current_user, 200
+        

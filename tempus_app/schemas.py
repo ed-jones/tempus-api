@@ -11,6 +11,14 @@ class EmergencyContactSchema(SQLAlchemyAutoSchema):
         sqla_session = db.session
         load_instance = True
 
+class ReviewSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        model = Review
+        sqla_session = db.session
+        load_instance = True
+
+    review_type = EnumField(ReviewType)
+
 class LanguageSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Language
@@ -33,6 +41,12 @@ class UserXLanguageSchema(SQLAlchemyAutoSchema):
 user_x_language_schema = UserXLanguageSchema()
 
 
+class Location(SQLAlchemyAutoSchema):
+    class Meta:
+        model = Location
+        sqla_session = db.session
+        load_instance = True
+
 class UserSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = User
@@ -40,18 +54,15 @@ class UserSchema(SQLAlchemyAutoSchema):
         load_instance = True
 
     password = auto_field(load_only=True)
-
     languages = fields.Nested(UserXLanguageSchema, many=True, exclude=("id",))
     emergency_contacts = fields.Nested(EmergencyContactSchema, many=True, exclude=('id',))
 
+    reviews_of_me = fields.Nested(ReviewSchema, many=True)
+    reviews_by_me = fields.Nested(ReviewSchema, many=True)
+
+
 user_schema = UserSchema()
 login_schema = UserSchema(only=('email', 'password'))
-
-class Location(SQLAlchemyAutoSchema):
-    class Meta:
-        model = Location
-        sqla_session = db.session
-        load_instance = True
 
 class TourSchema(SQLAlchemyAutoSchema):
     class Meta:

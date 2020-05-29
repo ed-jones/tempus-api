@@ -48,6 +48,8 @@ class Tour(db.Model):
     category = db.Column(db.Enum(TourCategory), nullable=False)
     location_id = db.Column(db.ForeignKey('LOCATION.id'))
     image_url = db.Column(db.Text)
+    equipment = db.Column(db.Text)
+    itinerary = db.Column(db.Text)
     
     location = db.relationship("Location", back_populates="tour")
     guide = db.relationship("User", back_populates="tour")
@@ -68,6 +70,20 @@ class Tour(db.Model):
 
         return km
 
+class ReviewType(enum.Enum):
+    FROM_HOSTS = "From Hosts"
+    FROM_GUESTS = "From Guests"
+
+class Review(db.Model):
+    __tablename__ = 'REVIEW'
+
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    reviewee_id = db.Column(db.ForeignKey('USER.uuid'), nullable=False)
+    reviewer_id = db.Column(db.ForeignKey('USER.uuid'), nullable=False)
+    tour_id = db.Column(db.ForeignKey('TOUR.uuid'), nullable=False)
+    review_type = db.Column(db.Enum(ReviewType), nullable=False)
+    rating = db.Column(db.Float, nullable=False)
+    comment = db.Column(db.Text)
 
 class User(db.Model):
     __tablename__ = 'USER'
@@ -84,11 +100,15 @@ class User(db.Model):
     guide_rating = db.Column(db.Float)
     guide_rating_count = db.Column(db.Integer, default=0)
     bio = db.Column(db.Text)
-    photo = db.Column(db.LargeBinary)
-    website = db.Column(db.String(60))
+    photo = db.Column(db.String(60))
+    banner = db.Column(db.Text)
+    website = db.Column(db.Text)
     date_created = db.Column(db.DateTime, default=datetime.now)
     location = db.Column(db.Text)
 
+    reviews_of_me = db.relationship("Review", backref="reviewee", foreign_keys='Review.reviewee_id')
+    reviews_by_me = db.relationship("Review", backref="reviewer", foreign_keys='Review.reviewer_id')
+    
     languages = db.relationship("UserXLanguage", back_populates="user")
     emergency_contacts = db.relationship("EmergencyContact", back_populates="user")
     tour = db.relationship("Tour", back_populates="guide")
@@ -133,17 +153,3 @@ class Currency(db.Model):
     alpha_code = db.Column(db.String(10))
     num_code = db.Column(db.Integer)
 
-class ReviewType(enum.Enum):
-    GUIDE = "Guide"
-    CUSTOMER = "Customer"
-
-class Review(db.Model):
-    __tablename__ = 'REVIEW'
-
-    id = db.Column(db.Integer, primary_key=True, nullable=False)
-    reviewer_id = db.Column(db.ForeignKey('USER.uuid'), nullable=False)
-    reviewee_id = db.Column(db.ForeignKey('USER.uuid'), nullable=False)
-    tour_id = db.Column(db.ForeignKey('TOUR.uuid'), nullable=False)
-    review_type = db.Column(db.Enum(ReviewType), nullable=False)
-    rating = db.Column(db.Float, nullable=False)
-    comment = db.Column(db.Text)
