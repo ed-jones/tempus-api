@@ -99,7 +99,11 @@ class GetTour(Resource):
 
         return tour_schema.dump(tour), 200
 
+    @jwt_required
     def put(self, uuid):
+        if uuid != get_jwt_identity():
+            return 'Authentication Error', 401
+
         tour_data = tour_schema.load(request.get_json())
 
         try:
@@ -116,7 +120,11 @@ class GetTour(Resource):
         db.session.commit()
         return 'Tour successfully updated', 200
 
+    @jwt_required
     def delete(self, uuid):
+        if uuid != get_jwt_identity():
+            return 'Authentication Error', 401
+
         try:
             UUID(uuid, version=1)
         except ValueError:
@@ -133,8 +141,13 @@ class GetTour(Resource):
 api.add_resource(GetTour, '/tour/<string:uuid>')
 
 class AddTour(Resource):
+    @jwt_required
     def post(self):
         new_tour = tour_schema.load(request.get_json())
+
+        if new_tour.guide_id != get_jwt_identity():
+            return 'Authentication Error', 401
+
         db.session.add(new_tour)
         db.session.commit()
 
@@ -170,10 +183,13 @@ class GetUser(Resource):
 
         return user_schema.dump(user), 200
 
-
+    @jwt_required
     def put(self, uuid):
 
         user_data = user_schema.load(request.get_json())
+
+        if user_data.uuid != get_jwt_identity():
+            return 'Authentication Error', 401
 
         try:
             UUID(uuid, version=1)
@@ -188,8 +204,13 @@ class GetUser(Resource):
         user.update(user_data)
         db.session.commit()
         return 'User successfully updated', 200
-            
+
+    @jwt_required
     def delete(self, uuid):
+
+        if uuid != get_jwt_identity():
+            return 'Authentication Error', 401
+
         try:
             UUID(uuid, version=1)
         except ValueError:
@@ -220,15 +241,19 @@ class LoginUser(Resource):
 
 api.add_resource(LoginUser, '/user/login')
 
-class LogoutUser(Resource):
+# Not sure if this is necessary any more
+class LogoutUser(Resource): 
     def get(self):
 
         return 'Successfully logged out', 200
 api.add_resource(LogoutUser, '/user/logout')
 
-@jwt_required
 class Me(Resource):
+    @jwt_required
     def get(self):
         current_user = get_jwt_identity()
         return current_user, 200
+
+api.add_resource(Me, '/user/me')
+
         
