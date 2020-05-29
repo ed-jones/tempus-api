@@ -18,6 +18,8 @@ class ReviewSchema(SQLAlchemyAutoSchema):
         load_instance = True
 
     review_type = EnumField(ReviewType)
+    reviewer = fields.Nested("UserSchema", exclude=('reviews_of_me', 'reviews_by_me',))
+    reviewee = fields.Nested("UserSchema", exclude=('reviews_of_me', 'reviews_by_me',))
 
 class LanguageSchema(SQLAlchemyAutoSchema):
     class Meta:
