@@ -84,6 +84,7 @@ class Review(db.Model):
     review_type = db.Column(db.Enum(ReviewType), nullable=False)
     rating = db.Column(db.Float, nullable=False)
     comment = db.Column(db.Text)
+    date_created = db.Column(db.DateTime, default=datetime.now)
 
 class User(db.Model):
     __tablename__ = 'USER'
