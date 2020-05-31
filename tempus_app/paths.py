@@ -236,8 +236,9 @@ class LoginUser(Resource):
         if (not user or not bcrypt.check_password_hash(user.password, user_data.password)):
             abort(401, message="Invalid username/password supplied")
 
-        access_token = create_access_token(identity=user_data.uuid)
-        return access_token, 200
+        access_token = create_access_token(identity=user.uuid)
+
+        return {"token": access_token, "user": user_schema.dump(user_data)}, 200
 
 api.add_resource(LoginUser, '/user/login')
 
@@ -252,7 +253,13 @@ class Me(Resource):
     @jwt_required
     def get(self):
         current_user = get_jwt_identity()
-        return current_user, 200
+
+        user = User.query.filter_by(uuid=current_user).first()
+
+        if (not user):
+            abort(404, message="User not found")
+
+        return user_schema.dump(user), 200
 
 api.add_resource(Me, '/user/me')
 

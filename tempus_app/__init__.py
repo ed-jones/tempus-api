@@ -32,7 +32,7 @@ bcrypt = Bcrypt(tempus_app)
 ma = Marshmallow(tempus_app)
 
 # Setup CORS
-cors = CORS(tempus_app, resources={r"*": {"origins": "https://tempus.tours"}})
+cors = CORS(tempus_app, resources={r"*": {"origins": "https://tempus.tours", "origins": "http://localhost:3000"}})
 
 # Import views
 from . import paths
