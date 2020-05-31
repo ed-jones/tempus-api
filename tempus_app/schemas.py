@@ -62,7 +62,7 @@ class UserSchema(SQLAlchemyAutoSchema):
     reviews_of_me = fields.Nested(ReviewSchema, many=True)
     reviews_by_me = fields.Nested(ReviewSchema, many=True)
 
-
+put_user_schema = UserSchema(partial=True)
 user_schema = UserSchema()
 login_schema = UserSchema(only=('email', 'password'))
 

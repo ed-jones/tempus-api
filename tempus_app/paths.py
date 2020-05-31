@@ -14,7 +14,7 @@ from uuid import UUID, uuid4
 from datetime import timedelta
 
 from .models import User, Tour, Location, TourCategory
-from .schemas import user_schema, tour_schema, tours_schema, login_schema, user_x_language_schema
+from .schemas import user_schema, tour_schema, tours_schema, login_schema, user_x_language_schema, put_user_schema
 
 class GetTours(Resource):
     def get(self):
@@ -186,22 +186,19 @@ class GetUser(Resource):
     @jwt_required
     def put(self, uuid):
 
-        user_data = user_schema.load(request.get_json())
-
-        if user_data.uuid != get_jwt_identity():
+        if uuid != get_jwt_identity():
             return 'Authentication Error', 401
 
-        try:
-            UUID(uuid, version=1)
-        except ValueError:
-            abort(400, message="Invalid UUID Supplied")
+        user_data = put_user_schema.load(request.get_json())
 
         user = User.query.filter_by(uuid=uuid)
 
         if (not user):
             abort(404, message="User not found")
 
-        user.update(user_data)
+        user.update(request.get_json())
+
+        
         db.session.commit()
         return 'User successfully updated', 200
 
@@ -252,7 +249,15 @@ api.add_resource(LogoutUser, '/user/logout')
 class Me(Resource):
     @jwt_required
     def get(self):
-        current_user = get_jwt_identity()
+        try:
+            current_user = get_jwt_identity()
+        except:
+            return 401
+
+        try:
+            UUID(current_user, version=1)
+        except ValueError:
+            abort(400, message="Invalid UUID Supplied")
 
         user = User.query.filter_by(uuid=current_user).first()
 

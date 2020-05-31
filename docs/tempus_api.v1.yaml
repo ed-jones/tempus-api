@@ -58,7 +58,16 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserPost'
+              $ref: '#/components/schemas/UserLoad'
+    put:
+      summary: ''
+      operationId: put-user-uuid
+      responses: {}
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLoad'
   /user/logout:
     post:
       summary: Logout
