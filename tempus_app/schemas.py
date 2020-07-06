@@ -78,6 +78,7 @@ class TourSchema(SQLAlchemyAutoSchema):
     location = fields.Nested(Location)
     category = EnumField(TourCategory)
     guide = fields.Nested(UserSchema)
+    reviews = fields.Nested(ReviewSchema, many=True)
 
 tour_schema = TourSchema()
 tours_schema = TourSchema(many=True)

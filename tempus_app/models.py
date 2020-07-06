@@ -53,6 +53,7 @@ class Tour(db.Model):
     
     location = db.relationship("Location", back_populates="tour")
     guide = db.relationship("User", back_populates="tour")
+    review = db.relationship("Review", backref="tour", foreign_keys='Review.tour_id')
 
     @hybrid_method
     def get_distance(self, user_lat, user_lng):

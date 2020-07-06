@@ -21,7 +21,7 @@ class GetTours(Resource):
         args = request.args
         tours = Tour.query.join(Tour.location)
 
-        DEFAULT_NUM = 4
+        DEFAULT_NUM = 5
 
         if 'order_by' in args:
 
@@ -164,7 +164,9 @@ class AddUser(Resource):
         db.session.add(new_user)
         db.session.commit()
 
-        return 'Done', 201
+        access_token = create_access_token(identity=user_id)
+
+        return {"token": access_token}, 201
 
 api.add_resource(AddUser, '/user/add')
 
